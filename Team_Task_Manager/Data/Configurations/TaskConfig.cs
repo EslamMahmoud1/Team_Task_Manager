@@ -12,12 +12,12 @@ namespace Team_Task_Manager.Data.Configurations
             builder.Property(t => t.DueDate).IsRequired();
 
             builder.HasOne(t => t.AssignedTo)
-                .WithMany()
+                .WithMany(u => u.AssignedTasks)
                 .HasForeignKey(t => t.AssignedToId)
                 .OnDelete(DeleteBehavior.NoAction);
 
              builder.HasOne(t => t.CreatedBy)
-                .WithMany()
+                .WithMany(u => u.CreatedTasks)
                 .HasForeignKey(t => t.CreatedById)
                 .OnDelete(DeleteBehavior.NoAction);
 

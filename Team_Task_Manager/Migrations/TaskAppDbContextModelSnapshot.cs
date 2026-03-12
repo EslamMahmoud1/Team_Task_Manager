@@ -52,12 +52,6 @@ namespace Team_Task_Manager.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<long?>("TaskUserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("TaskUserId1")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(20)
@@ -68,10 +62,6 @@ namespace Team_Task_Manager.Migrations
                     b.HasIndex("AssignedToId");
 
                     b.HasIndex("CreatedById");
-
-                    b.HasIndex("TaskUserId");
-
-                    b.HasIndex("TaskUserId1");
 
                     b.ToTable("Tasks");
                 });
@@ -100,24 +90,16 @@ namespace Team_Task_Manager.Migrations
             modelBuilder.Entity("Team_Task_Manager.Models.Entities.Task.TaskItem", b =>
                 {
                     b.HasOne("Team_Task_Manager.Models.Entities.User.TaskUser", "AssignedTo")
-                        .WithMany()
+                        .WithMany("AssignedTasks")
                         .HasForeignKey("AssignedToId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("Team_Task_Manager.Models.Entities.User.TaskUser", "CreatedBy")
-                        .WithMany()
+                        .WithMany("CreatedTasks")
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-
-                    b.HasOne("Team_Task_Manager.Models.Entities.User.TaskUser", null)
-                        .WithMany("AssignedTasks")
-                        .HasForeignKey("TaskUserId");
-
-                    b.HasOne("Team_Task_Manager.Models.Entities.User.TaskUser", null)
-                        .WithMany("CreatedTasks")
-                        .HasForeignKey("TaskUserId1");
 
                     b.Navigation("AssignedTo");
 

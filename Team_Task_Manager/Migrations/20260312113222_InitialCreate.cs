@@ -38,9 +38,7 @@ namespace Team_Task_Manager.Migrations
                     Status = table.Column<int>(type: "int", nullable: false),
                     AssignedToId = table.Column<long>(type: "bigint", nullable: false),
                     CreatedById = table.Column<long>(type: "bigint", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    TaskUserId = table.Column<long>(type: "bigint", nullable: true),
-                    TaskUserId1 = table.Column<long>(type: "bigint", nullable: true)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -55,16 +53,6 @@ namespace Team_Task_Manager.Migrations
                         column: x => x.CreatedById,
                         principalTable: "Users",
                         principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Tasks_Users_TaskUserId",
-                        column: x => x.TaskUserId,
-                        principalTable: "Users",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Tasks_Users_TaskUserId1",
-                        column: x => x.TaskUserId1,
-                        principalTable: "Users",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -76,16 +64,6 @@ namespace Team_Task_Manager.Migrations
                 name: "IX_Tasks_CreatedById",
                 table: "Tasks",
                 column: "CreatedById");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Tasks_TaskUserId",
-                table: "Tasks",
-                column: "TaskUserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Tasks_TaskUserId1",
-                table: "Tasks",
-                column: "TaskUserId1");
         }
 
         /// <inheritdoc />
