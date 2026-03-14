@@ -2,17 +2,18 @@
 using Microsoft.AspNetCore.Mvc;
 using Team_Task_Manager.Data;
 using Team_Task_Manager.Models.Entities.User;
+using Team_Task_Manager.Services.Interfaces;
 using Team_Task_Manager.ViewModels.User;
 
 namespace Team_Task_Manager.Controllers
 {
     public class UserController : Controller
     {
-        private readonly TaskAppDbContext _context;
+        private readonly IUserService _userService;
 
-        public UserController(TaskAppDbContext context)
+        public UserController(IUserService userService)
         {
-            _context = context;
+            _userService = userService;
         }
 
         public IActionResult Index()
@@ -35,18 +36,19 @@ namespace Team_Task_Manager.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = userViewModel.Adapt<TaskUser>();
-                await _context.Users.AddAsync(user);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index), "Dashboard");
+                var user = await _userService.CreateUser(userViewModel);
+                if (user is null) return BadRequest("Can not Create User");
+                return RedirectToAction(nameof(Index), "Dashboard",user);
             }
             return View();
         }
         [HttpPost]
-        public IActionResult CurrentUser(UserViewModel userViewModel)
+        public async Task<IActionResult> CurrentUser(UserViewModel userViewModel)
         {
             if (ModelState.IsValid)
             {
+                var user = await _userService.SignInUser(userViewModel.Email);
+                if (user is null) return BadRequest("User Not Found");
                 return RedirectToAction(nameof(Index), "Dashboard");
             }
             return View();

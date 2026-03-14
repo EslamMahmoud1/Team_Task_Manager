@@ -1,5 +1,169 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model DashboardViewModel
+
 @{
+    ViewData["Title"] = "Dashboard";
 }
+
+<div class="container mt-4">
+
+    <h2 class="mb-4">Welcome, @Model.UserName 👋</h2>
+
+    <!-- Stats -->
+    <div class="row mb-4">
+
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm">
+                <div class="card-body">
+                    <h5>Total Created</h5>
+                    <h3 class="text-primary">@Model.TotalTasksCreated</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm">
+                <div class="card-body">
+                    <h5>Assigned To You</h5>
+                    <h3 class="text-info">@Model.TotalTasksAssigned</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm">
+                <div class="card-body">
+                    <h5>Completed</h5>
+                    <h3 class="text-success">@Model.CompletedTasks</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-center shadow-sm">
+                <div class="card-body">
+                    <h5>Pending</h5>
+                    <h3 class="text-warning">@Model.PendingTasks</h3>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Created Tasks -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            Tasks You Created
+        </div>
+
+        <div class="card-body">
+
+            @if (Model.CreatedTasks.Any())
+            {
+                <table class="table table-hover">
+
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Status</th>
+                            <th>Assigned To</th>
+                            <th>Created</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var task in Model.CreatedTasks)
+                        {
+                            <tr>
+                                <td>@task.Title</td>
+                                <td>
+                                    <span class="badge bg-secondary">
+                                        @task.Status
+                                    </span>
+                                </td>
+                                <td>@task.AssignedTo</td>
+                                <td>@task.CreatedAt.ToShortDateString()</td>
+
+                                <td>
+                                    <a asp-controller="Tasks"
+                                       asp-action="Details"
+                                       @* asp-route-id="@task.Id" *@
+                                       class="btn btn-sm btn-outline-primary">
+                                        View
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+
+                </table>
+            }
+            else
+            {
+                <p class="text-muted">You haven't created any tasks yet.</p>
+            }
+
+        </div>
+    </div>
+
+    <!-- Assigned Tasks -->
+    <div class="card shadow-sm">
+
+        <div class="card-header bg-success text-white">
+            Tasks Assigned To You
+        </div>
+
+        <div class="card-body">
+
+            @if (Model.AssignedTasks.Any())
+            {
+                <table class="table table-hover">
+
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Status</th>
+                            <th>Created At</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var task in Model.AssignedTasks)
+                        {
+                            <tr>
+                                <td>@task.Title</td>
+
+                                <td>
+                                    <span class="badge bg-warning text-dark">
+                                        @task.Status
+                                    </span>
+                                </td>
+
+                                <td>@task.CreatedAt.ToShortDateString()</td>
+
+                                <td>
+                                    <a asp-controller="Tasks"
+                                       asp-action="Details"
+                                       @* asp-route-id="@task.Id" *@
+                                       class="btn btn-sm btn-outline-success">
+                                        View
+                                    </a>
+                                </td>
+
+                            </tr>
+                        }
+                    </tbody>
+
+                </table>
+            }
+            else
+            {
+                <p class="text-muted">No tasks assigned to you.</p>
+            }
+
+        </div>
+
+    </div>
+
+</div>
