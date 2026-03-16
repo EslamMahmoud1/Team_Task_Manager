@@ -16,6 +16,8 @@ namespace Team_Task_Manager.Extesions
 
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IDashboardService, DashboardService>();
+            services.AddScoped<ITaskService, TaskService>();
+
             return services;
         }
     }

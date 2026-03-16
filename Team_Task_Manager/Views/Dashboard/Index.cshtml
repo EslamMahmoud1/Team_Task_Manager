@@ -8,6 +8,12 @@
 
     <h2 class="mb-4">Welcome, @Model.UserName 👋</h2>
 
+    <div>
+        <a asp-controller="Task" asp-action="Create" class="btn btn-primary mb-4">
+            Create New Task
+        </a>
+    </div>
+
     <!-- Stats -->
     <div class="row mb-4">
 
@@ -76,13 +82,13 @@
                         {
                             <tr>
                                 <td>@task.Title</td>
-                                <td>
+    @*                             <td>
                                     <span class="badge bg-secondary">
                                         @task.Status
                                     </span>
                                 </td>
                                 <td>@task.AssignedTo</td>
-                                <td>@task.CreatedAt.ToShortDateString()</td>
+                                <td>@task.CreatedAt.ToShortDateString()</td> *@
 
                                 <td>
                                     <a asp-controller="Tasks"
@@ -133,7 +139,7 @@
                         {
                             <tr>
                                 <td>@task.Title</td>
-
+@* 
                                 <td>
                                     <span class="badge bg-warning text-dark">
                                         @task.Status
@@ -141,7 +147,7 @@
                                 </td>
 
                                 <td>@task.CreatedAt.ToShortDateString()</td>
-
+ *@
                                 <td>
                                     <a asp-controller="Tasks"
                                        asp-action="Details"

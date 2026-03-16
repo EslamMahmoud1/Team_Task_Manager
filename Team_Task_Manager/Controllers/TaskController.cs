@@ -1,40 +1,36 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using Team_Task_Manager.Models.Entities.Task;
+using Team_Task_Manager.Services.Interfaces;
+using Team_Task_Manager.ViewModels.Task;
 
 namespace Team_Task_Manager.Controllers
 {
     public class TaskController : Controller
     {
-        // GET: TaskController
-        public ActionResult Index()
-        {
-            return View();
-        }
+        private readonly ITaskService _taskService;
 
-        // GET: TaskController/Details/5
-        public ActionResult Details(int id)
+        public TaskController(ITaskService taskService)
         {
-            return View();
+            _taskService = taskService;
         }
 
         // GET: TaskController/Create
-        public ActionResult Create()
+        public async Task<ActionResult> Create()
         {
+            var users = await _taskService.GetUsers();
+            ViewBag.AssignedToId = new SelectList(users, "Id", "Name");
             return View();
         }
 
         // POST: TaskController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<ActionResult> Create(TaskViewModel taskViewModel)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            var task = await _taskService.CreateTask(taskViewModel , 1);
+            return RedirectToAction(nameof(Index),"Dashboard");
         }
 
         // GET: TaskController/Edit/5

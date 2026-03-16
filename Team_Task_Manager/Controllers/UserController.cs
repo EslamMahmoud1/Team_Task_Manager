@@ -38,6 +38,7 @@ namespace Team_Task_Manager.Controllers
             {
                 var user = await _userService.CreateUser(userViewModel);
                 if (user is null) return BadRequest("Can not Create User");
+
                 return RedirectToAction(nameof(Index), "Dashboard",user);
             }
             return View();
@@ -49,7 +50,7 @@ namespace Team_Task_Manager.Controllers
             {
                 var user = await _userService.SignInUser(userViewModel.Email);
                 if (user is null) return BadRequest("User Not Found");
-                return RedirectToAction(nameof(Index), "Dashboard");
+                return RedirectToAction(nameof(Index), "Dashboard",user);
             }
             return View();
         }
