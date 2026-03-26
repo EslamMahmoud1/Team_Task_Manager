@@ -1,4 +1,7 @@
 ﻿using Mapster;
+using Microsoft.EntityFrameworkCore;
+using Team_Task_Manager.Data;
+using Team_Task_Manager.Extesions;
 using Team_Task_Manager.Models.Entities.Task;
 using Team_Task_Manager.Models.Entities.User;
 using Team_Task_Manager.Services.Interfaces;
@@ -9,11 +12,22 @@ namespace Team_Task_Manager.Services.Implementations
 {
     public class DashboardService : IDashboardService
     {
-        public DashboardViewModel GetUserDashboard(TaskUser user)
-        {
-            var createdTasks = user.CreatedTasks.Adapt<List<TaskViewModel>>();
-            var assignedTasks = user.AssignedTasks.Adapt<List<TaskViewModel>>();
+        private readonly TaskAppDbContext _context;
 
+        public DashboardService(TaskAppDbContext context)
+        {
+            _context = context;
+        }
+
+        public DashboardViewModel GetUserDashboard(long userId)
+        {
+            var user = _context.Users.Include(u => u.CreatedTasks).ThenInclude(t => t.AssignedTo)
+                .Include(u => u.AssignedTasks).ThenInclude(t => t.CreatedBy)
+                .FirstOrDefault(u => u.Id == userId);
+
+            var createdTasks = user.CreatedTasks.Adapt<List<ShowTaskViewModel>>();
+            var assignedTasks = user.AssignedTasks.Adapt<List<ShowTaskViewModel>>();
+            
             var dashboard = new DashboardViewModel()
             {
                 UserName = user.Name,

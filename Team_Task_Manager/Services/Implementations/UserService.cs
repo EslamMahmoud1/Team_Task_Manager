@@ -33,8 +33,9 @@ namespace Team_Task_Manager.Services.Implementations
 
         public async Task<TaskUser> SignInUser(string Email)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == Email);
+            var user = await _context.Users.Include(u => u.CreatedTasks).Include(u => u.AssignedTasks).FirstOrDefaultAsync(u => u.Email == Email);
             if(user == null) throw new Exception("User with this email does not exist");
+            
 
             return user;
         }

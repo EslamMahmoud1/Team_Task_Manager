@@ -8,5 +8,6 @@ namespace Team_Task_Manager.Services.Interfaces
     {
         public Task<TaskItem> CreateTask(TaskViewModel taskViewModel, long creatorId);
         public Task<IEnumerable<SelectUserList>> GetUsers();
+        public Task<TaskItem> GetTaskById(long id);
     }
 }

@@ -5,6 +5,6 @@ namespace Team_Task_Manager.Services.Interfaces
 {
     public interface IDashboardService
     {
-        public DashboardViewModel GetUserDashboard(TaskUser user);
+        public DashboardViewModel GetUserDashboard(long userId);
     }
 }

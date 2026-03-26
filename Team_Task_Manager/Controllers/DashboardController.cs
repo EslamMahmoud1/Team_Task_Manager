@@ -13,9 +13,12 @@ namespace Team_Task_Manager.Controllers
             _dashboard = dashboard;
         }
 
-        public IActionResult Index(TaskUser user)
+        public IActionResult Index()
         {
-            var dashboard = _dashboard.GetUserDashboard(user);
+            var flag = HttpContext.Request.Cookies.TryGetValue("UserId", out var userIdStr);
+            var userId = flag ? long.Parse(userIdStr) : 0;
+
+            var dashboard = _dashboard.GetUserDashboard(userId);
             return View(dashboard);
         }
     }

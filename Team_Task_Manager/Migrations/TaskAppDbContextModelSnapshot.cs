@@ -63,7 +63,7 @@ namespace Team_Task_Manager.Migrations
 
                     b.HasIndex("CreatedById");
 
-                    b.ToTable("Tasks");
+                    b.ToTable("Tasks", (string)null);
                 });
 
             modelBuilder.Entity("Team_Task_Manager.Models.Entities.User.TaskUser", b =>
@@ -84,7 +84,7 @@ namespace Team_Task_Manager.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("Team_Task_Manager.Models.Entities.Task.TaskItem", b =>

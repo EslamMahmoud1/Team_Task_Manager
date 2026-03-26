@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Mapster;
+using Microsoft.EntityFrameworkCore;
 using Team_Task_Manager.Data;
 using Team_Task_Manager.Services.Implementations;
 using Team_Task_Manager.Services.Interfaces;
@@ -17,7 +18,8 @@ namespace Team_Task_Manager.Extesions
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IDashboardService, DashboardService>();
             services.AddScoped<ITaskService, TaskService>();
-
+            services.AddSingleton(TypeAdapterConfig.GlobalSettings);
+            new MappingConfiguration().ConfigureMappings();
             return services;
         }
     }

@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Team_Task_Manager.Models.Entities.Task;
 using Team_Task_Manager.Services.Interfaces;
 using Team_Task_Manager.ViewModels.Task;
 
@@ -29,14 +27,17 @@ namespace Team_Task_Manager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(TaskViewModel taskViewModel)
         {
-            var task = await _taskService.CreateTask(taskViewModel , 1);
-            return RedirectToAction(nameof(Index),"Dashboard");
+            var flag = HttpContext.Request.Cookies.TryGetValue("UserId", out var userIdStr);
+            var userId = flag ? long.Parse(userIdStr) : 0;
+
+            var task = await _taskService.CreateTask(taskViewModel, userId);
+            return RedirectToAction(nameof(Index), "Dashboard");
         }
 
-        // GET: TaskController/Edit/5
-        public ActionResult Edit(int id)
+        public ActionResult Details(int id)
         {
-            return View();
+            var task = _taskService.GetTaskById(id);
+            return View(task);
         }
 
         // POST: TaskController/Edit/5

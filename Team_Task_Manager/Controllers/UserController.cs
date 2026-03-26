@@ -1,7 +1,4 @@
-﻿using Mapster;
-using Microsoft.AspNetCore.Mvc;
-using Team_Task_Manager.Data;
-using Team_Task_Manager.Models.Entities.User;
+﻿using Microsoft.AspNetCore.Mvc;
 using Team_Task_Manager.Services.Interfaces;
 using Team_Task_Manager.ViewModels.User;
 
@@ -39,7 +36,13 @@ namespace Team_Task_Manager.Controllers
                 var user = await _userService.CreateUser(userViewModel);
                 if (user is null) return BadRequest("Can not Create User");
 
-                return RedirectToAction(nameof(Index), "Dashboard",user);
+                HttpContext.Response.Cookies.Append("UserId", user.Id.ToString(), new CookieOptions
+                {
+                    HttpOnly = true,
+                    Expires = DateTimeOffset.UtcNow.AddDays(7)
+                });
+
+                return RedirectToAction(nameof(Index), "Dashboard");
             }
             return View();
         }
@@ -50,7 +53,14 @@ namespace Team_Task_Manager.Controllers
             {
                 var user = await _userService.SignInUser(userViewModel.Email);
                 if (user is null) return BadRequest("User Not Found");
-                return RedirectToAction(nameof(Index), "Dashboard",user);
+
+                HttpContext.Response.Cookies.Append("UserId", user.Id.ToString(), new CookieOptions
+                {
+                    HttpOnly = true,
+                    Expires = DateTimeOffset.UtcNow.AddDays(7)
+                });
+
+                return RedirectToAction(nameof(Index), "Dashboard");
             }
             return View();
         }
