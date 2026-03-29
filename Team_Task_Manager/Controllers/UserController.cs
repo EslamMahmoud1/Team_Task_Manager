@@ -39,7 +39,12 @@ namespace Team_Task_Manager.Controllers
                 HttpContext.Response.Cookies.Append("UserId", user.Id.ToString(), new CookieOptions
                 {
                     HttpOnly = true,
-                    Expires = DateTimeOffset.UtcNow.AddDays(7)
+                    Expires = DateTimeOffset.UtcNow.AddHours(1)
+                });
+                HttpContext.Response.Cookies.Append("UserName", user.Name.ToString(), new CookieOptions
+                {
+                    HttpOnly = true,
+                    Expires = DateTimeOffset.UtcNow.AddHours(1)
                 });
 
                 return RedirectToAction(nameof(Index), "Dashboard");
@@ -57,12 +62,23 @@ namespace Team_Task_Manager.Controllers
                 HttpContext.Response.Cookies.Append("UserId", user.Id.ToString(), new CookieOptions
                 {
                     HttpOnly = true,
-                    Expires = DateTimeOffset.UtcNow.AddDays(7)
+                    Expires = DateTimeOffset.UtcNow.AddHours(1)
+                });
+                HttpContext.Response.Cookies.Append("UserName", user.Name.ToString(), new CookieOptions
+                {
+                    HttpOnly = true,
+                    Expires = DateTimeOffset.UtcNow.AddHours(1)
                 });
 
                 return RedirectToAction(nameof(Index), "Dashboard");
             }
             return View();
+        }
+        public IActionResult SignOutUser()
+        {
+            Response.Cookies.Delete("UserId");
+            Response.Cookies.Delete("UserName");
+            return RedirectToAction("Index", "User");
         }
     }
 }

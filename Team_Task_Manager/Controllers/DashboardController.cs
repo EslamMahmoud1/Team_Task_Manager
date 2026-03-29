@@ -16,7 +16,7 @@ namespace Team_Task_Manager.Controllers
         public IActionResult Index()
         {
             var flag = HttpContext.Request.Cookies.TryGetValue("UserId", out var userIdStr);
-            var userId = flag ? long.Parse(userIdStr) : 0;
+            var userId = flag ? long.Parse(userIdStr!) : 0;
 
             var dashboard = _dashboard.GetUserDashboard(userId);
             return View(dashboard);

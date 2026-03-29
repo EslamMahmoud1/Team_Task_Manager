@@ -44,7 +44,7 @@ public class TaskService : ITaskService
         });
         return userList;
     }
-    public async Task<TaskItem> GetTaskById(long id)
+    public async Task<TaskItem?> GetTaskById(long id)
     {
         return await _context.Tasks.Include(t => t.AssignedTo).Include(t => t.CreatedBy).SingleOrDefaultAsync(t => t.Id == id);
     }
@@ -52,13 +52,31 @@ public class TaskService : ITaskService
     public async Task<int> CompeleteTask(long taskId)
     {
         var task = await GetTaskById(taskId);
-        task.Status = TaskStat.Completed;
-        return await _context.SaveChangesAsync();
+        if(task != null)
+        {
+            task.Status = TaskStat.Completed;
+            return await _context.SaveChangesAsync();
+        }
+        return 0;
     }
     public async Task<int> UnCompeleteTask(long taskId)
     {
         var task = await GetTaskById(taskId);
-        task.Status = TaskStat.InProgress;
-        return await _context.SaveChangesAsync();
+        if (task != null)
+        {
+            task.Status = TaskStat.Completed;
+            return await _context.SaveChangesAsync();
+        }
+        return 0;
+    }
+
+    public async Task DeleteTask(long taskId)
+    {
+        var task = await GetTaskById(taskId);
+        if(task != null)
+        {
+            _context.Tasks.Remove(task);
+            await _context.SaveChangesAsync();
+        }
     }
 }

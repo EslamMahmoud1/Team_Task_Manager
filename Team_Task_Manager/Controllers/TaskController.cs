@@ -29,7 +29,7 @@ namespace Team_Task_Manager.Controllers
         public async Task<ActionResult> Create(TaskViewModel taskViewModel)
         {
             var flag = HttpContext.Request.Cookies.TryGetValue("UserId", out var userIdStr);
-            var userId = flag ? long.Parse(userIdStr) : 0;
+            var userId = flag ? long.Parse(userIdStr!) : 0;
 
             var task = await _taskService.CreateTask(taskViewModel, userId);
             return RedirectToAction(nameof(Index), "Dashboard");
@@ -59,40 +59,12 @@ namespace Team_Task_Manager.Controllers
             return RedirectToAction(nameof(Index), "Dashboard");
         }
 
-        // POST: TaskController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<ActionResult> Delete(int id, IFormCollection collection)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: TaskController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: TaskController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            await _taskService.DeleteTask(id);
+            return RedirectToAction(nameof(Index), "Dashboard");
         }
     }
 }
