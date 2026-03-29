@@ -46,6 +46,19 @@ public class TaskService : ITaskService
     }
     public async Task<TaskItem> GetTaskById(long id)
     {
-        return await _context.Tasks.SingleOrDefaultAsync(t => t.Id == id);
+        return await _context.Tasks.Include(t => t.AssignedTo).Include(t => t.CreatedBy).SingleOrDefaultAsync(t => t.Id == id);
+    }
+
+    public async Task<int> CompeleteTask(long taskId)
+    {
+        var task = await GetTaskById(taskId);
+        task.Status = TaskStat.Completed;
+        return await _context.SaveChangesAsync();
+    }
+    public async Task<int> UnCompeleteTask(long taskId)
+    {
+        var task = await GetTaskById(taskId);
+        task.Status = TaskStat.InProgress;
+        return await _context.SaveChangesAsync();
     }
 }

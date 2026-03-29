@@ -7,7 +7,6 @@
 <h1>Details</h1>
 
 <div>
-    <h4>ShowTaskViewModel</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
@@ -55,6 +54,26 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <form asp-controller="Task"
+          asp-action="Complete"
+          asp-route-id="@Model.Id"
+          method="post"
+          style="display:inline;">
+
+        <button type="submit" class="btn btn-sm btn-outline-success">
+            Complete
+        </button>
+    </form> |
+    <form asp-controller="Task"
+          asp-action="UnComplete"
+          asp-route-id="@Model.Id"
+          method="post"
+          style="display:inline;">
+
+        <button type="submit" class="btn btn-sm btn-outline-danger">
+            InComplete
+        </button>
+    </form>
+   |
+    <a asp-controller="dashboard" asp-action="Index">Back to Dashboard</a>
 </div>

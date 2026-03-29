@@ -33,8 +33,8 @@ namespace Team_Task_Manager.Services.Implementations
                 UserName = user.Name,
                 CreatedTasks = createdTasks,
                 AssignedTasks = assignedTasks,
-                CompletedTasks = user.CreatedTasks.Count(t => t.Status == TaskStat.Completed) + user.AssignedTasks.Count(t => t.Status == TaskStat.Completed),
-                PendingTasks = user.CreatedTasks.Count(t => t.Status != TaskStat.Completed) + user.AssignedTasks.Count(t => t.Status != TaskStat.Completed),
+                CompletedTasks = user.AssignedTasks.Count(t => t.Status == TaskStat.Completed),
+                PendingTasks =  user.AssignedTasks.Count(t => t.Status != TaskStat.Completed),
                 TotalTasksCreated = user.CreatedTasks.Count,
                 TotalTasksAssigned = user.AssignedTasks.Count
             };

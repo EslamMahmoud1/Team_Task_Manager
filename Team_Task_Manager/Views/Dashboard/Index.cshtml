@@ -73,7 +73,6 @@
                             <th>Status</th>
                             <th>Assigned To</th>
                             <th>Created</th>
-                            <th></th>
                         </tr>
                     </thead>
 
@@ -89,15 +88,6 @@
                                 </td>
                                 <td>@task.AssignedToName</td>
                                 <td>@task.CreatedAt.ToShortDateString()</td>
-
-                                <td>
-                                    <a asp-controller="Tasks"
-                                       asp-action="Details"
-                                       asp-route-id="@task.Id"
-                                       class="btn btn-sm btn-outline-primary">
-                                        View
-                                    </a>
-                                </td>
                             </tr>
                         }
                     </tbody>
@@ -148,13 +138,12 @@
                                 </td>
                                 <td>@task.CreatedByName</td>
                                 <td>@task.CreatedAt.ToShortDateString()</td>
-                              
-
+                                
                                 <td>
-                                    <a asp-controller="Tasks"
+                                    <a asp-controller="Task"
                                        asp-action="Details"
                                        asp-route-id="@task.Id"
-                                       class="btn btn-sm btn-outline-success">
+                                       class="btn btn-sm btn-outline-primary">
                                         View
                                     </a>
                                 </td>

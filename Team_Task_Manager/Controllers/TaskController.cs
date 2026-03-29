@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Mapster;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Team_Task_Manager.Services.Interfaces;
 using Team_Task_Manager.ViewModels.Task;
@@ -34,10 +35,28 @@ namespace Team_Task_Manager.Controllers
             return RedirectToAction(nameof(Index), "Dashboard");
         }
 
-        public ActionResult Details(int id)
+        public async Task<ActionResult> Details(int id)
         {
-            var task = _taskService.GetTaskById(id);
-            return View(task);
+            var task = await _taskService.GetTaskById(id);
+            var mappedTask = task.Adapt<ShowTaskViewModel>();
+            return View(mappedTask);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Complete(long id)
+        {
+            await _taskService.CompeleteTask(id);
+            return RedirectToAction(nameof(Index), "Dashboard");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UnComplete(long id)
+        {
+            await _taskService.UnCompeleteTask(id);
+            return RedirectToAction(nameof(Index), "Dashboard");
         }
 
         // POST: TaskController/Edit/5
