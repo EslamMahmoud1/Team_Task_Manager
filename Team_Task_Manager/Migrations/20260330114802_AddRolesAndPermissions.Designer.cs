@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Team_Task_Manager.Data;
 
@@ -11,9 +12,11 @@ using Team_Task_Manager.Data;
 namespace Team_Task_Manager.Migrations
 {
     [DbContext(typeof(TaskAppDbContext))]
-    partial class TaskAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260330114802_AddRolesAndPermissions")]
+    partial class AddRolesAndPermissions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -140,6 +143,33 @@ namespace Team_Task_Manager.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Permissions");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            Name = "CreateTask"
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            Name = "ChangeStatus"
+                        },
+                        new
+                        {
+                            Id = 3L,
+                            Name = "DeleteTask"
+                        },
+                        new
+                        {
+                            Id = 4L,
+                            Name = "ViewTask"
+                        },
+                        new
+                        {
+                            Id = 5L,
+                            Name = "AssignTask"
+                        });
                 });
 
             modelBuilder.Entity("Team_Task_Manager.Models.Entities.Permissions.RolePermission", b =>
@@ -185,6 +215,20 @@ namespace Team_Task_Manager.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            Name = "User",
+                            NormalizedName = "USER"
+                        });
                 });
 
             modelBuilder.Entity("Team_Task_Manager.Models.Entities.Task.TaskItem", b =>
@@ -286,9 +330,6 @@ namespace Team_Task_Manager.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
-                    b.Property<long>("UserRoleId")
-                        .HasColumnType("bigint");
-
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedEmail")
@@ -298,8 +339,6 @@ namespace Team_Task_Manager.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
-
-                    b.HasIndex("UserRoleId");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -393,17 +432,6 @@ namespace Team_Task_Manager.Migrations
                     b.Navigation("CreatedBy");
                 });
 
-            modelBuilder.Entity("Team_Task_Manager.Models.Entities.User.TaskUser", b =>
-                {
-                    b.HasOne("Team_Task_Manager.Models.Entities.Role.UserRoles", "UserRole")
-                        .WithMany("TaskUsers")
-                        .HasForeignKey("UserRoleId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("UserRole");
-                });
-
             modelBuilder.Entity("Team_Task_Manager.Models.Entities.Permissions.Permission", b =>
                 {
                     b.Navigation("RolePermissions");
@@ -412,8 +440,6 @@ namespace Team_Task_Manager.Migrations
             modelBuilder.Entity("Team_Task_Manager.Models.Entities.Role.UserRoles", b =>
                 {
                     b.Navigation("RolePermissions");
-
-                    b.Navigation("TaskUsers");
                 });
 
             modelBuilder.Entity("Team_Task_Manager.Models.Entities.User.TaskUser", b =>

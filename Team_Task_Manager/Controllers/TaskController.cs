@@ -19,7 +19,12 @@ namespace Team_Task_Manager.Controllers
         public async Task<ActionResult> Create()
         {
             var users = await _taskService.GetUsers();
-            ViewBag.AssignedToId = new SelectList(users, "Id", "Name");
+            var flag = HttpContext.Request.Cookies.TryGetValue("UserId", out var userIdStr);
+            var userId = flag ? userIdStr : "";
+            
+            var filteredUsers = users.Where(u => u.Id != userId).ToList();
+
+            ViewBag.AssignedToId = new SelectList(filteredUsers, "Id", "Name");
             return View();
         }
 

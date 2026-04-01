@@ -28,7 +28,7 @@ namespace Team_Task_Manager.Services.Implementations
 
             var dashboard = new DashboardViewModel()
             {
-                UserName = user.Name,
+                UserName = user?.UserName ?? "",
                 CreatedTasks = createdTasks ,
                 AssignedTasks = assignedTasks,
                 CompletedTasks = user.AssignedTasks.Count(t => t.Status == TaskStat.Completed),

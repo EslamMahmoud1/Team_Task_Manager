@@ -41,7 +41,7 @@ namespace Team_Task_Manager.Controllers
                     HttpOnly = true,
                     Expires = DateTimeOffset.UtcNow.AddHours(1)
                 });
-                HttpContext.Response.Cookies.Append("UserName", user.Name.ToString(), new CookieOptions
+                HttpContext.Response.Cookies.Append("UserName", user.UserName ?? "", new CookieOptions
                 {
                     HttpOnly = true,
                     Expires = DateTimeOffset.UtcNow.AddHours(1)
@@ -64,7 +64,7 @@ namespace Team_Task_Manager.Controllers
                     HttpOnly = true,
                     Expires = DateTimeOffset.UtcNow.AddHours(1)
                 });
-                HttpContext.Response.Cookies.Append("UserName", user.Name.ToString(), new CookieOptions
+                HttpContext.Response.Cookies.Append("UserName", user.UserName ?? "", new CookieOptions
                 {
                     HttpOnly = true,
                     Expires = DateTimeOffset.UtcNow.AddHours(1)

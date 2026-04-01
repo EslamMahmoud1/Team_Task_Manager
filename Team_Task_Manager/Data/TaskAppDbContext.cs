@@ -1,22 +1,27 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using Team_Task_Manager.Models.Entities.Permissions;
+using Team_Task_Manager.Models.Entities.Role;
 using Team_Task_Manager.Models.Entities.Task;
 using Team_Task_Manager.Models.Entities.User;
-using Team_Task_Manager.ViewModels.Task;
 
 namespace Team_Task_Manager.Data
 {
-    public class TaskAppDbContext : DbContext
+    public class TaskAppDbContext : IdentityDbContext<TaskUser, UserRoles, long>
     {
         public TaskAppDbContext(DbContextOptions options) : base(options)
         {
         }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder) 
         {
+            base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(TaskAppDbContext).Assembly);
         }
         public DbSet<TaskItem> Tasks { get; set; }
-        public DbSet<TaskUser> Users { get; set; }
-        public DbSet<Team_Task_Manager.ViewModels.Task.ShowTaskViewModel> ShowTaskViewModel { get; set; } = default!;
+        public DbSet<TaskUser> TaskUsers { get; set; }
+        public DbSet<UserRoles> TaskUserRoles { get; set; }
+        public DbSet<Permission> Permissions { get; set; }
+        public DbSet<RolePermission> RolePermissions { get; set; }
     }
 }

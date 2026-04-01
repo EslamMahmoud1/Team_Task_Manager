@@ -9,8 +9,8 @@ namespace Team_Task_Manager.Extesions
         public void ConfigureMappings()
         {
             TypeAdapterConfig<TaskItem, ShowTaskViewModel>.NewConfig()
-                .Map(dest => dest.AssignedToName, src => src.AssignedTo.Name)
-                .Map(dest => dest.CreatedByName, src => src.CreatedBy.Name);
+                .Map(dest => dest.AssignedToName, src => src.AssignedTo.UserName)
+                .Map(dest => dest.CreatedByName, src => src.CreatedBy.UserName);
                 
 
         }

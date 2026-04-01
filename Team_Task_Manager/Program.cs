@@ -4,7 +4,7 @@ namespace Team_Task_Manager
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddControllersWithViews();
@@ -27,7 +27,7 @@ namespace Team_Task_Manager
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=User}/{action=Index}/{id?}");
-
+            await app.MigrateAndSeedAsync();
             app.Run();
         }
     }

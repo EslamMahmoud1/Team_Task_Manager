@@ -40,7 +40,7 @@ public class TaskService : ITaskService
         var userList = users.Select(u => new SelectUserList
         {
             Id = u.Id.ToString(),
-            Name = u.Name
+            Name = u.UserName ?? ""
         });
         return userList;
     }
@@ -64,7 +64,7 @@ public class TaskService : ITaskService
         var task = await GetTaskById(taskId);
         if (task != null)
         {
-            task.Status = TaskStat.Completed;
+            task.Status = TaskStat.InProgress;
             return await _context.SaveChangesAsync();
         }
         return 0;

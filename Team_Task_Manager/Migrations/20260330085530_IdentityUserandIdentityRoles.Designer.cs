@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Team_Task_Manager.Data;
 
@@ -11,9 +12,11 @@ using Team_Task_Manager.Data;
 namespace Team_Task_Manager.Migrations
 {
     [DbContext(typeof(TaskAppDbContext))]
-    partial class TaskAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260330085530_IdentityUserandIdentityRoles")]
+    partial class IdentityUserandIdentityRoles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -123,38 +126,6 @@ namespace Team_Task_Manager.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
-                });
-
-            modelBuilder.Entity("Team_Task_Manager.Models.Entities.Permissions.Permission", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Permissions");
-                });
-
-            modelBuilder.Entity("Team_Task_Manager.Models.Entities.Permissions.RolePermission", b =>
-                {
-                    b.Property<long>("RoleId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("PermissionId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("RoleId", "PermissionId");
-
-                    b.HasIndex("PermissionId");
-
-                    b.ToTable("RolePermissions");
                 });
 
             modelBuilder.Entity("Team_Task_Manager.Models.Entities.Role.UserRoles", b =>
@@ -286,9 +257,6 @@ namespace Team_Task_Manager.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
-                    b.Property<long>("UserRoleId")
-                        .HasColumnType("bigint");
-
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedEmail")
@@ -298,8 +266,6 @@ namespace Team_Task_Manager.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
-
-                    b.HasIndex("UserRoleId");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -355,25 +321,6 @@ namespace Team_Task_Manager.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Team_Task_Manager.Models.Entities.Permissions.RolePermission", b =>
-                {
-                    b.HasOne("Team_Task_Manager.Models.Entities.Permissions.Permission", "Permission")
-                        .WithMany("RolePermissions")
-                        .HasForeignKey("PermissionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Team_Task_Manager.Models.Entities.Role.UserRoles", "Role")
-                        .WithMany("RolePermissions")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Permission");
-
-                    b.Navigation("Role");
-                });
-
             modelBuilder.Entity("Team_Task_Manager.Models.Entities.Task.TaskItem", b =>
                 {
                     b.HasOne("Team_Task_Manager.Models.Entities.User.TaskUser", "AssignedTo")
@@ -391,29 +338,6 @@ namespace Team_Task_Manager.Migrations
                     b.Navigation("AssignedTo");
 
                     b.Navigation("CreatedBy");
-                });
-
-            modelBuilder.Entity("Team_Task_Manager.Models.Entities.User.TaskUser", b =>
-                {
-                    b.HasOne("Team_Task_Manager.Models.Entities.Role.UserRoles", "UserRole")
-                        .WithMany("TaskUsers")
-                        .HasForeignKey("UserRoleId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("UserRole");
-                });
-
-            modelBuilder.Entity("Team_Task_Manager.Models.Entities.Permissions.Permission", b =>
-                {
-                    b.Navigation("RolePermissions");
-                });
-
-            modelBuilder.Entity("Team_Task_Manager.Models.Entities.Role.UserRoles", b =>
-                {
-                    b.Navigation("RolePermissions");
-
-                    b.Navigation("TaskUsers");
                 });
 
             modelBuilder.Entity("Team_Task_Manager.Models.Entities.User.TaskUser", b =>
