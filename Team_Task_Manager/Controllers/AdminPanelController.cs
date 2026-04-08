@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Team_Task_Manager.Models.Entities.Permissions;
 using Team_Task_Manager.Services.Interfaces;
+using Team_Task_Manager.ViewModels.AdminPanel;
 
 namespace Team_Task_Manager.Controllers
 {
@@ -13,7 +13,12 @@ namespace Team_Task_Manager.Controllers
         }
         public IActionResult Index()
         {
-            return View();
+            var viewModel = new AdminPanelIndexViewModel
+            {
+                Roles = _adminService.GetAllRoles().ToList(),
+                Permissions = _adminService.GetAllPermissions().ToList(),
+            };
+            return View(viewModel);
         }
         public IActionResult Permissions()
         {
@@ -34,17 +39,13 @@ namespace Team_Task_Manager.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AssignPermissionsForRole()
+        public async Task<IActionResult> AssignPermissionsForRole(long SelectedRoleId, List<long> SelectedPermissionIds)
         {
-            await _adminService.AssignRolePermissions(1, new List<Permission>
-            {
-                new Permission { Name = PermissionName.CreateTask },
-                new Permission { Name = PermissionName.ViewTask },
-                new Permission { Name = PermissionName.ChangeStatus},
-                new Permission { Name = PermissionName.DeleteTask},
-
-            });
-            return RedirectToAction(nameof(Index));
+            var selectedPermissions = _adminService.GetAllPermissions()
+                .Where(p => SelectedPermissionIds.Contains(p.Id))
+                .ToList();
+            await _adminService.AssignRolePermissions(SelectedRoleId, selectedPermissions);
+            return RedirectToAction(nameof(Index),"Dashboards");
         }
     }
 }

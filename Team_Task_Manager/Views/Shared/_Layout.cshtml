@@ -7,8 +7,18 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Team_Task_Manager.styles.css" asp-append-version="true" />
+    <link href="https://kendo.cdn.telerik.com/themes/13.1.1/default/default-main.css" rel="stylesheet" />
+
+
+    @**@
+    
+    @RenderSection("Styles", required: false)
+    @**@
 </head>
 <body>
+
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="@Url.Content("~/lib/kendo-ui/js/kendo.all.min.js")"></script>
     @{
         var userId = Context.Request.Cookies["UserId"];
         var userName = Context.Request.Cookies["UserName"];
@@ -60,7 +70,6 @@
             &copy; 2026 - Team_Task_Manager - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)

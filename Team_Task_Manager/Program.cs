@@ -26,7 +26,7 @@ namespace Team_Task_Manager
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=User}/{action=Index}/{id?}");
+                pattern: "{controller=Dashboards}/{action=Index}/{id?}");
             await app.MigrateAndSeedAsync();
             app.Run();
         }

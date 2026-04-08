@@ -52,11 +52,11 @@ namespace Team_Task_Manager.Controllers
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> CurrentUser(UserViewModel userViewModel)
+        public async Task<IActionResult> CurrentUser(string Email)
         {
             if (ModelState.IsValid)
             {
-                var user = await _userService.SignInUser(userViewModel.Email);
+                var user = await _userService.SignInUser(Email);
                 if (user is null) return BadRequest("User Not Found");
 
                 HttpContext.Response.Cookies.Append("UserId", user.Id.ToString(), new CookieOptions

@@ -25,7 +25,7 @@ namespace Team_Task_Manager.Services.Implementations
             var emailRegex = new Regex(@"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$");
             if(!emailRegex.IsMatch(userViewModel.Email)) throw new Exception("Invalid email format");
 
-            var user = new TaskUser() { Email = userViewModel.Email, UserName = userViewModel.Name };
+            var user = new TaskUser() { Email = userViewModel.Email, UserName = userViewModel.Name , UserRoleId = 3};
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
             return user;
