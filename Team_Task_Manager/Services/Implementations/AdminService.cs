@@ -33,22 +33,11 @@ namespace Team_Task_Manager.Services.Implementations
             await _context.SaveChangesAsync();
         }
 
-        public ICollection<Permission> GetAllPermissions()
+        public List<Permission> GetAllPermissions()
         {
             return _context.Permissions.ToList();
         }
-
-        public ICollection<UserRoles> GetAllRoles()
-        {
-            return _context.TaskUserRoles.ToList();
-        }
         
-        public async Task<List<Permission>> GetRolePermissions(long roleId)
-        {
-            var rolePermissions = await _context.RolePermissions.Where(rp => rp.RoleId == roleId)
-                .Select(p => p.Permission).ToListAsync();
-
-            return rolePermissions;
-        }
+        
     }
 }

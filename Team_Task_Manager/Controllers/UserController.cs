@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Team_Task_Manager.Services.Interfaces;
 using Team_Task_Manager.ViewModels.User;
 
@@ -35,50 +36,25 @@ namespace Team_Task_Manager.Controllers
             {
                 var user = await _userService.CreateUser(userViewModel);
                 if (user is null) return BadRequest("Can not Create User");
-
-                HttpContext.Response.Cookies.Append("UserId", user.Id.ToString(), new CookieOptions
-                {
-                    HttpOnly = true,
-                    Expires = DateTimeOffset.UtcNow.AddHours(1)
-                });
-                HttpContext.Response.Cookies.Append("UserName", user.UserName ?? "", new CookieOptions
-                {
-                    HttpOnly = true,
-                    Expires = DateTimeOffset.UtcNow.AddHours(1)
-                });
-
-                return RedirectToAction(nameof(Index), "Dashboard");
             }
-            return View();
+            return RedirectToAction("LoginBasic", "Auth");
         }
         [HttpPost]
-        public async Task<IActionResult> CurrentUser(string Email)
+        public async Task<IActionResult> CurrentUser(SignInViewModel signInUser)
         {
             if (ModelState.IsValid)
             {
-                var user = await _userService.SignInUser(Email);
+                var user = await _userService.SignInUser(signInUser);
                 if (user is null) return BadRequest("User Not Found");
-
-                HttpContext.Response.Cookies.Append("UserId", user.Id.ToString(), new CookieOptions
-                {
-                    HttpOnly = true,
-                    Expires = DateTimeOffset.UtcNow.AddHours(1)
-                });
-                HttpContext.Response.Cookies.Append("UserName", user.UserName ?? "", new CookieOptions
-                {
-                    HttpOnly = true,
-                    Expires = DateTimeOffset.UtcNow.AddHours(1)
-                });
 
                 return RedirectToAction(nameof(Index), "Dashboard");
             }
             return View();
         }
-        public IActionResult SignOutUser()
+        public async Task<IActionResult> SignOutUser()
         {
-            Response.Cookies.Delete("UserId");
-            Response.Cookies.Delete("UserName");
-            return RedirectToAction("Index", "User");
+            await _userService.LogoutUser();
+            return RedirectToAction("Login", "Account");
         }
     }
 }

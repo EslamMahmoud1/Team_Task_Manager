@@ -1,8 +1,12 @@
-﻿namespace Team_Task_Manager.ViewModels.User
+﻿using Team_Task_Manager.Models.Entities.Role;
+
+namespace Team_Task_Manager.ViewModels.User
 {
     public class UserViewModel
     {
         public string Name { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+        public long SelectedRoleId { get; set; }
     }
 }

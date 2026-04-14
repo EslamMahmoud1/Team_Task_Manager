@@ -4,14 +4,26 @@
 @using Team_Task_Manager.ViewModels.AdminPanel
 @model AdminPanelIndexViewModel
 
+@section VendorStyles {
+    <link href="https://kendo.cdn.telerik.com/themes/13.1.1/default/default-main.css" rel="stylesheet" />
+}
+@section VendorScripts {
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="~/lib/kendo-ui/js/kendo.all.min.js"></script>
+}
 
-<select id="SelectedRoleId" name="SelectedRoleId">
+@* <select id="SelectedRoleId" name="SelectedRoleId">
     @foreach (var role in Model.Roles)
     {
         <option value="@role.Id">@role.Name</option>
         var RoleId = role.Id;
     }
-</select>
+</select> *@
+
+<div style="margin-bottom: 15px;">
+    <input type="text" id="newRoleName" placeholder="Enter new role name" class="form-control" style="width: 250px; display: inline-block;" />
+</div>
+
 <div id="example">
     <div class="demo-section wide">
         <div id="demo-section-title" class="treeview-flex">
@@ -25,7 +37,9 @@
             <div id="treeview-kendo"></div>
         </div>
     </div>
-    <script id="treeview" type="text/kendo-ui-template">
+    @section PageScripts
+    {
+        <script id="treeview" type="text/kendo-ui-template">
 
             # if (!item.items && item.spriteCssClass) { #
             <span class="k-treeview-leaf-text">#: item.text #</span>
@@ -40,88 +54,86 @@
             <span class="k-sprite folder"></span>
             <span class="k-treeview-leaf-text">#: item.text #</span>
             # } #
-    </script>
+        </script>
 
             
-    <script src="~/js/javascript.js" asp-append-version="true"></script>
-    <style>
+        <script src="~/js/javascript.js" asp-append-version="true"></script>
+    }
+    @section PageStyles
+    {
+        <style>
                 
 
             #demo-section-title h3 {
-                margin-bottom: 2em;
-                text-align: center;
+            margin-bottom: 2em;
+            text-align: center;
             }
 
             .treeview-flex h4 {
-                color: #656565;
-                margin-bottom: 1em;
-                text-align: center;
+            color: #656565;
+            margin-bottom: 1em;
+            text-align: center;
             }
 
             #demo-section-title {
-                width: 100%;
-                flex: auto;
+            width: 100%;
+            flex: auto;
             }
 
             .treeview-flex {
-                flex: 1;
-                -ms-flex: 1 0 auto;
+            flex: 1;
+            -ms-flex: 1 0 auto;
             }
 
             .k-treeview {
-                max-width: 240px;
-                margin: 0 auto;
+            max-width: 240px;
+            margin: 0 auto;
             }
 
             #treeview-kendo .k-sprite {
-                background-image: url("../content/web/treeview/coloricons-sprite.png");
+            background-image: url("../content/web/treeview/coloricons-sprite.png");
             }
 
             #treeview-telerik .k-sprite {
-                background-image: url("../content/web/treeview/coloricons-sprite.png");
+            background-image: url("../content/web/treeview/coloricons-sprite.png");
             }
 
             .demo-section {
-                margin-bottom: 5px;
-                overflow: auto;
-                display: flex;
-                justify-content: space-between;
-                flex-wrap: wrap;
+            margin-bottom: 5px;
+            overflow: auto;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
             }
 
             .rootfolder {
-                background-position: 0 0;
+            background-position: 0 0;
             }
 
             .folder {
-                background-position: 0 -16px;
+            background-position: 0 -16px;
             }
 
             .pdf {
-                background-position: 0 -32px;
+            background-position: 0 -32px;
             }
 
             .html {
-                background-position: 0 -48px;
+            background-position: 0 -48px;
             }
 
             .image {
-                background-position: 0 -64px;
+            background-position: 0 -64px;
             }
 
-    </style>
+        </style>
+    }
 </div>
 
 <input type="hidden" name="PermissionsIds" id="PermissionsIds" />
 <button id="btnSave" class="btn btn-success" style="margin-top:15px;">
-    Save Permissions
+    Save Role & Permissions
 </button>
     
-@section VendorStyles {
-    <link href="https://kendo.cdn.telerik.com/themes/13.1.1/default/default-main.css" rel="stylesheet" />
-}
 
-@section VendorScripts {
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-    <script src="~/lib/kendo-ui/js/kendo.all.min.js"></script>
-}
+

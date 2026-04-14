@@ -7,44 +7,31 @@ namespace Team_Task_Manager.Controllers
     public class AdminPanelController : Controller
     {
         private readonly IAdminService _adminService;
-        public AdminPanelController(IAdminService adminService)
+        private readonly IRoleService _roleService;
+        public AdminPanelController(IAdminService adminService, IRoleService roleService)
         {
             _adminService = adminService;
+            _roleService = roleService;
         }
         public IActionResult Index()
         {
             var viewModel = new AdminPanelIndexViewModel
             {
-                Roles = _adminService.GetAllRoles().ToList(),
+                Roles = _roleService.GetAllRoles().ToList(),
                 Permissions = _adminService.GetAllPermissions().ToList(),
             };
             return View(viewModel);
         }
-        public IActionResult Permissions()
-        {
-            var permissions = _adminService.GetAllPermissions();
-            return View(permissions);
-        }
-
-        public IActionResult Roles()
-        {
-            var roles = _adminService.GetAllRoles();
-            return View(roles);
-        }
-
-        public async Task<IActionResult> GetPermissionsForRole()
-        {
-            var permissions = await _adminService.GetRolePermissions(1);
-            return View(permissions);
-        }
 
         [HttpPost]
-        public async Task<IActionResult> AssignPermissionsForRole(long SelectedRoleId, List<long> SelectedPermissionIds)
+        public async Task<IActionResult> AssignPermissionsForRole(string RoleName, List<long> SelectedPermissionIds)
         {
             var selectedPermissions = _adminService.GetAllPermissions()
                 .Where(p => SelectedPermissionIds.Contains(p.Id))
                 .ToList();
-            await _adminService.AssignRolePermissions(SelectedRoleId, selectedPermissions);
+
+            var roleId = await _roleService.CreateRole(RoleName);
+            await _adminService.AssignRolePermissions(roleId, selectedPermissions);
             return RedirectToAction(nameof(Index),"Dashboards");
         }
     }

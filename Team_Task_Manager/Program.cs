@@ -10,6 +10,7 @@ namespace Team_Task_Manager
             builder.Services.AddControllersWithViews();
             builder.Services.TaskServices(builder.Configuration);
 
+
             var app = builder.Build();
             if (!app.Environment.IsDevelopment())
             {
@@ -26,7 +27,7 @@ namespace Team_Task_Manager
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Dashboards}/{action=Index}/{id?}");
+                pattern: "{controller=Auth}/{action=RegisterBasic}/{id?}");
             await app.MigrateAndSeedAsync();
             app.Run();
         }
