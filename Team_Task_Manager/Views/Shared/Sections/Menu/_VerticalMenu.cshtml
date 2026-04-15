@@ -63,8 +63,8 @@
                     @if (PermissionHelper.HasPermission(User, PermissionName.CRM))
                     {
                         <li class='menu-item@(currentPage == "/Dashboards/CRM" ? " active" : "")'>
-                            <a asp-controller="Dashboards" asp-action="CRM" class="menu-link">
-                                <div class="text-truncate">CRM</div>
+                            <a asp-controller="Dashboard" asp-action="Index" class="menu-link">
+                                <div class="text-truncate">Task Manager</div>
                             </a>
                         </li>
                     }

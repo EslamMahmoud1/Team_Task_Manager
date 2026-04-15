@@ -18,6 +18,10 @@ namespace Team_Task_Manager.Services.Implementations
         public async Task<long> CreateRole(string roleName)
         {
             var role = new UserRoles { Name = roleName };
+
+            //var oldRole = _dbContext.Roles.Where(r => r.Name == roleName);
+            //_dbContext.Roles.RemoveRange(oldRole);
+
             await _dbContext.Roles.AddAsync(role);
             await _dbContext.SaveChangesAsync();
             return role.Id;

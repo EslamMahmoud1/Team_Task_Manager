@@ -47,7 +47,7 @@ namespace Team_Task_Manager.Controllers
                 var user = await _userService.SignInUser(signInUser);
                 if (user is null) return BadRequest("User Not Found");
 
-                return RedirectToAction(nameof(Index), "Dashboard");
+                return RedirectToAction(nameof(Index), "Dashboards");
             }
             return View();
         }

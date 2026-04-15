@@ -1,6 +1,7 @@
 ﻿using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Security.Claims;
 using Team_Task_Manager.Services.Interfaces;
 using Team_Task_Manager.ViewModels.Task;
 
@@ -33,9 +34,7 @@ namespace Team_Task_Manager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(TaskViewModel taskViewModel)
         {
-            var flag = HttpContext.Request.Cookies.TryGetValue("UserId", out var userIdStr);
-            var userId = flag ? long.Parse(userIdStr!) : 0;
-
+            var userId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
             var task = await _taskService.CreateTask(taskViewModel, userId);
             return RedirectToAction(nameof(Index), "Dashboard");
         }

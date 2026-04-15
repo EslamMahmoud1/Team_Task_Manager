@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Team_Task_Manager.Extesions;
+using Team_Task_Manager.Models.Entities.Permissions;
 using Team_Task_Manager.Services.Interfaces;
 using Team_Task_Manager.ViewModels.AdminPanel;
 
@@ -13,6 +15,7 @@ namespace Team_Task_Manager.Controllers
             _adminService = adminService;
             _roleService = roleService;
         }
+        [AuthFilter(ClaimName.Permission, PermissionName.AdminPanel)]
         public IActionResult Index()
         {
             var viewModel = new AdminPanelIndexViewModel
