@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using System.Data;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
@@ -49,39 +48,23 @@ public class UserService : IUserService
         var user = await _userManager.FindByEmailAsync(signInUser.Email);
         if (user is null) return Result<TaskUser>.Failure(new List<string>() { "User with this email does not exist" });
 
-        var result = await _signInManager.PasswordSignInAsync(user, signInUser.Password, false, false);
-        if (!result.Succeeded) return Result<TaskUser>.Failure(new List<string>() { "Wrong Password" });
-
-        // Get user roles
         var userRole = await _roleService.GetRoleById(user.UserRoleId);
-
-        // Get user permissions (implement this based on your permission model)
         var permissions = await _roleService.GetRolePermissions(user.UserRoleId);
 
         // Create claims
         var claims = new List<Claim>
-    {
-            
-        new Claim(ClaimTypes.Name, user.UserName),
-        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-        new Claim(ClaimTypes.Email, user.Email)
-    };
+        {
+            new Claim(ClaimTypes.Name, user.UserName!),
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Email, user.Email!),
+            new Claim(ClaimTypes.Role, userRole.Name!)
+        };
 
-        // Add role claims
-        claims.Add(new Claim(ClaimTypes.Role, userRole.Name));
-
-        // Add permission claims
         foreach (var permission in permissions)
         {
             claims.Add(new Claim("Permission", permission.Name.ToString()));
         }
-
-        // Create identity and principal
-        var identity = new ClaimsIdentity(claims, "login");
-        var principal = new ClaimsPrincipal(identity);
-
-        await _httpContextAccessor.HttpContext.SignInAsync(IdentityConstants.ApplicationScheme, principal);
-
+        await _signInManager.SignInWithClaimsAsync(user, true, claims);
         return Result<TaskUser>.Success(user);
     }
 

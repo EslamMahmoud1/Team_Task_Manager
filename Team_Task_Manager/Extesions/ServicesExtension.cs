@@ -18,7 +18,9 @@ namespace Team_Task_Manager.Extesions
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
             });
 
-            services.AddIdentity<TaskUser, UserRoles>()
+            services.AddIdentity<TaskUser, UserRoles>(
+
+                )
                 .AddEntityFrameworkStores<TaskAppDbContext>()
                 .AddDefaultTokenProviders();
             services.ConfigureApplicationCookie(options =>

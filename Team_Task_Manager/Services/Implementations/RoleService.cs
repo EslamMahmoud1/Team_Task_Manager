@@ -1,8 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Team_Task_Manager.Data;
 using Team_Task_Manager.Models.Entities.Permissions;
 using Team_Task_Manager.Models.Entities.Role;
 using Team_Task_Manager.Services.Interfaces;
+using Team_Task_Manager.Shared;
 
 namespace Team_Task_Manager.Services.Implementations
 {
@@ -15,16 +17,16 @@ namespace Team_Task_Manager.Services.Implementations
             _dbContext = dbContext;
         }
 
-        public async Task<long> CreateRole(string roleName)
+        public async Task<Result<long>> CreateRole(string roleName)
         {
             var role = new UserRoles { Name = roleName };
 
-            //var oldRole = _dbContext.Roles.Where(r => r.Name == roleName);
-            //_dbContext.Roles.RemoveRange(oldRole);
+            var oldRole = _dbContext.Roles.Where(r => r.Name == roleName);
+            if(oldRole.Any()) return Result<long>.Failure(new List<string> { "Role already exists." });
 
             await _dbContext.Roles.AddAsync(role);
             await _dbContext.SaveChangesAsync();
-            return role.Id;
+            return Result<long>.Success(role.Id);
         }
 
         public async Task DeleteRole(long roleId)
@@ -51,7 +53,7 @@ namespace Team_Task_Manager.Services.Implementations
 
         public async Task<UserRoles> GetRoleById(long roleId)
         {
-            return await _dbContext.TaskUserRoles.FindAsync(roleId);
+            return await _dbContext.TaskUserRoles.FindAsync(roleId) ?? new UserRoles();
         }
         public async Task<List<Permission>> GetRolePermissions(long roleId)
         {

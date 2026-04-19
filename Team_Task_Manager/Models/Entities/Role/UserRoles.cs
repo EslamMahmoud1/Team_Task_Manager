@@ -6,7 +6,7 @@ namespace Team_Task_Manager.Models.Entities.Role
 {
     public class UserRoles : IdentityRole<long>
     {
-        public ICollection<RolePermission> RolePermissions { get; set; } 
-        public ICollection<TaskUser> TaskUsers { get; set; }
+        public ICollection<RolePermission> RolePermissions { get; set; } = new List<RolePermission>();
+        public ICollection<TaskUser> TaskUsers { get; set; } = new List<TaskUser>();
     }
 }

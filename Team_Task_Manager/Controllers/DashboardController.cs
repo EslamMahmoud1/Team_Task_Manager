@@ -16,7 +16,7 @@ namespace Team_Task_Manager.Controllers
 
         public IActionResult Index()
         {
-            var userId = long.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            var userId = long.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value!);
 
             var dashboard = _dashboard.GetUserDashboard(userId);
             return View(dashboard);

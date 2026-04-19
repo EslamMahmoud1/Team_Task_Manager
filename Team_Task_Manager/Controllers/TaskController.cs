@@ -34,7 +34,8 @@ namespace Team_Task_Manager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(TaskViewModel taskViewModel)
         {
-            var userId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var userId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
+            if (userId == 0) return Unauthorized();
             var task = await _taskService.CreateTask(taskViewModel, userId);
             return RedirectToAction(nameof(Index), "Dashboard");
         }

@@ -6,6 +6,6 @@ namespace Team_Task_Manager.Models.Entities.Permissions
     {
         public long Id { get; set; }
         public PermissionName Name { get; set; } 
-        public ICollection<RolePermission> RolePermissions { get; set; } 
+        public ICollection<RolePermission> RolePermissions { get; set; } = new List<RolePermission>();
     }
 }

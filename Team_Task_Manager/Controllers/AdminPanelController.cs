@@ -34,7 +34,7 @@ namespace Team_Task_Manager.Controllers
                 .ToList();
 
             var roleId = await _roleService.CreateRole(RoleName);
-            await _adminService.AssignRolePermissions(roleId, selectedPermissions);
+            await _adminService.AssignRolePermissions(roleId.Value, selectedPermissions);
             return RedirectToAction(nameof(Index),"Dashboards");
         }
     }

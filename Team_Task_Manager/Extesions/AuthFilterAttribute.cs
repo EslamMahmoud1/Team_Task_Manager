@@ -17,7 +17,7 @@ public class AuthFilterAttribute : Attribute, IAuthorizationFilter
     }
     public async void OnAuthorization(AuthorizationFilterContext context)
     {
-        if (!context.HttpContext.User.Identity.IsAuthenticated)
+        if (!(context.HttpContext.User.Identity?.IsAuthenticated ?? false))
         {
             context.Result = new RedirectToActionResult("Login", "Account", null);
             return;
@@ -29,7 +29,6 @@ public class AuthFilterAttribute : Attribute, IAuthorizationFilter
         {
             context.HttpContext.Response.Cookies.Delete("TaskAppAuthCookie");
             await context.HttpContext.SignOutAsync();
-            //context.Result = new ForbidResult();
             context.Result = new RedirectToActionResult("LoginBasic", "Auth", null);
         }
     }
