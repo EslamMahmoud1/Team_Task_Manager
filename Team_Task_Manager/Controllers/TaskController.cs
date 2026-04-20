@@ -7,6 +7,7 @@ using Team_Task_Manager.ViewModels.Task;
 
 namespace Team_Task_Manager.Controllers
 {
+
     public class TaskController : Controller
     {
         private readonly ITaskService _taskService;
@@ -22,7 +23,7 @@ namespace Team_Task_Manager.Controllers
             var users = await _taskService.GetUsers();
             var flag = HttpContext.Request.Cookies.TryGetValue("UserId", out var userIdStr);
             var userId = flag ? userIdStr : "";
-            
+
             var filteredUsers = users.Where(u => u.Id != userId).ToList();
 
             ViewBag.AssignedToId = new SelectList(filteredUsers, "Id", "Name");

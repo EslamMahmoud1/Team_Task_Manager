@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using Team_Task_Manager.Models.Entities.User;
 using Team_Task_Manager.Services.Interfaces;
 
 namespace Team_Task_Manager.Controllers

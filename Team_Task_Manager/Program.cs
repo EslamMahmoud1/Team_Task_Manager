@@ -9,7 +9,7 @@ namespace Team_Task_Manager
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddControllersWithViews();
             builder.Services.TaskServices(builder.Configuration);
-
+            builder.Services.AddFluentEmail(builder.Configuration);
 
             var app = builder.Build();
             if (!app.Environment.IsDevelopment())
