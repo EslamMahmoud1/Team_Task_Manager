@@ -48,6 +48,9 @@ public class UserService : IUserService
         var user = await _userManager.FindByEmailAsync(signInUser.Email);
         if (user is null) return Result<TaskUser>.Failure(new List<string>() { "User with this email does not exist" });
 
+        var signInResult = await _signInManager.PasswordSignInAsync(user, signInUser.Password, true, false);
+        if (!signInResult.Succeeded) return Result<TaskUser>.Failure(new List<string>() { "Invalid password" });
+
         var userRole = await _roleService.GetRoleById(user.UserRoleId);
         var permissions = await _roleService.GetRolePermissions(user.UserRoleId);
 

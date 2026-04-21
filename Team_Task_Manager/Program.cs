@@ -10,7 +10,7 @@ namespace Team_Task_Manager
             builder.Services.AddControllersWithViews();
             builder.Services.TaskServices(builder.Configuration);
             builder.Services.AddFluentEmail(builder.Configuration);
-
+            
             var app = builder.Build();
             if (!app.Environment.IsDevelopment())
             {
@@ -23,6 +23,7 @@ namespace Team_Task_Manager
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(

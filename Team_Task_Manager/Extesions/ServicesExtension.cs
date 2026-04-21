@@ -1,4 +1,5 @@
 ﻿using Mapster;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Team_Task_Manager.Data;
@@ -31,6 +32,10 @@ namespace Team_Task_Manager.Extesions
                 options.AccessDeniedPath = "/Auth/AccessDenied";
                 options.ExpireTimeSpan = TimeSpan.FromDays(7); 
                 options.SlidingExpiration = true; 
+            });
+            services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             });
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IDashboardService, DashboardService>();

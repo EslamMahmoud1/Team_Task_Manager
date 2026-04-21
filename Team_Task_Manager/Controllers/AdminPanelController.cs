@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Team_Task_Manager.Extesions;
 using Team_Task_Manager.Models.Entities.Permissions;
 using Team_Task_Manager.Services.Interfaces;
@@ -6,6 +7,7 @@ using Team_Task_Manager.ViewModels.AdminPanel;
 
 namespace Team_Task_Manager.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class AdminPanelController : Controller
     {
         private readonly IAdminService _adminService;
@@ -15,7 +17,7 @@ namespace Team_Task_Manager.Controllers
             _adminService = adminService;
             _roleService = roleService;
         }
-        [AuthFilter(ClaimName.Permission, PermissionName.AdminPanel)]
+        //[AuthFilter(ClaimName.Permission, PermissionName.AdminPanel)]
         public IActionResult Index()
         {
             var viewModel = new AdminPanelIndexViewModel
@@ -34,8 +36,14 @@ namespace Team_Task_Manager.Controllers
                 .ToList();
 
             var roleId = await _roleService.CreateRole(RoleName);
+            if (roleId.Value == 0) return BadRequest("Role Already Exists");
+
             await _adminService.AssignRolePermissions(roleId.Value, selectedPermissions);
             return RedirectToAction(nameof(Index),"Dashboards");
+        }
+        public IActionResult EditPermissionsForRole()
+        {
+            return View();
         }
     }
 }

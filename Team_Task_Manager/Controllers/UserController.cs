@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Team_Task_Manager.Services.Interfaces;
 using Team_Task_Manager.ViewModels.User;
 
@@ -36,6 +35,7 @@ namespace Team_Task_Manager.Controllers
             {
                 var user = await _userService.CreateUser(userViewModel);
                 if (user is null) return BadRequest("Can not Create User");
+                //Email Service Usage
             }
             return RedirectToAction("LoginBasic", "Auth");
         }
@@ -45,7 +45,7 @@ namespace Team_Task_Manager.Controllers
             if (ModelState.IsValid)
             {
                 var user = await _userService.SignInUser(signInUser);
-                if (user is null) return BadRequest("User Not Found");
+                if (user.Value is null) return BadRequest("User Not Found");
 
                 return RedirectToAction(nameof(Index), "Dashboards");
             }
