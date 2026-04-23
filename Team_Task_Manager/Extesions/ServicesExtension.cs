@@ -44,6 +44,7 @@ namespace Team_Task_Manager.Extesions
             services.AddSingleton(TypeAdapterConfig.GlobalSettings);
             services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IUsersService, UsersService>();
             new MappingConfiguration().ConfigureMappings();
             return services;
         }

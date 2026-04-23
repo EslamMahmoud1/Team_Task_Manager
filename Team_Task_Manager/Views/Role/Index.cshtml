@@ -1,0 +1,40 @@
+﻿@model RoleIndexViewModel
+
+<h2>Roles</h2>
+<a asp-action="DeleteRoles"
+       asp-controller="Role"
+       class="btn btn-danger">
+    Delete Roles
+</a>
+
+<form asp-action="GetPermissionsForRole" method="post">
+
+    <div class="form-group">
+        <label>Select Role</label>
+        <select asp-for="SelectedRoleId"
+                asp-items="Model.Roles"
+                class="form-control">
+        </select>
+    </div>
+
+    <br />
+
+    <button type="submit" class="btn btn-primary">
+        Show Permissions
+    </button>
+
+</form>
+
+<hr />
+
+@if (Model.ShowPermissions)
+{
+    <h4>Permissions</h4>
+
+    <ul>
+        @foreach (var p in Model.Permissions)
+        {
+            <li>@p</li>
+        }
+    </ul>
+}

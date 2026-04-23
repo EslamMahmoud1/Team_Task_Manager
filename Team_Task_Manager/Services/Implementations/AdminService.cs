@@ -14,16 +14,20 @@ namespace Team_Task_Manager.Services.Implementations
             _context = context;
         }
         
-        public async Task AssignRolePermissions(long roleId, List<Permission> permissions)
+        public async Task AssignRolePermissions(string roleName, List<Permission> permissions)
         {
-            var role = await _context.TaskUserRoles.FindAsync(roleId);
+            var role = await _context.TaskUserRoles.Where(r => r.Name == roleName).FirstOrDefaultAsync();
+            if(role == null)
+            {
+                await _context.AddAsync(new UserRoles { Name = roleName });
 
+            }
             var permissionNames = permissions.Select(p => p.Name).ToList();
             var dbPermissions = await _context.Permissions
                                     .Where(p => permissionNames.Contains(p.Name))
                                     .ToListAsync();
 
-            var old = _context.RolePermissions.Where(r => r.RoleId == roleId);
+            var old = _context.RolePermissions.Where(r => r.RoleId == role.Id);
             _context.RolePermissions.RemoveRange(old);
 
             foreach (var permission in dbPermissions)

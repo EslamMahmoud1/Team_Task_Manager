@@ -6,7 +6,7 @@ namespace Team_Task_Manager.Services.Interfaces
     public interface IAdminService
     {
         public List<Permission> GetAllPermissions();
-        public Task AssignRolePermissions(long roleId , List<Permission> permissions);
+        public Task AssignRolePermissions(string roleName , List<Permission> permissions);
         
 
     }

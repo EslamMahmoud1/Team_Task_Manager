@@ -28,7 +28,7 @@ namespace Team_Task_Manager
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Auth}/{action=RegisterBasic}/{id?}");
+                pattern: "{controller=Auth}/{action=LoginBasic}/{id?}");
             await app.MigrateAndSeedAsync();
             app.Run();
         }

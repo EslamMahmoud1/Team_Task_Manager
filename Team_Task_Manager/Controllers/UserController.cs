@@ -42,14 +42,12 @@ namespace Team_Task_Manager.Controllers
         [HttpPost]
         public async Task<IActionResult> CurrentUser(SignInViewModel signInUser)
         {
-            if (ModelState.IsValid)
-            {
-                var user = await _userService.SignInUser(signInUser);
-                if (user.Value is null) return BadRequest("User Not Found");
+            if (!ModelState.IsValid) return BadRequest("False Credentials");
 
-                return RedirectToAction(nameof(Index), "Dashboards");
-            }
-            return View();
+            var user = await _userService.SignInUser(signInUser);
+            if (user.Value is null) return BadRequest(user.Errors);
+
+            return RedirectToAction(nameof(Index), "Dashboards");
         }
         public async Task<IActionResult> SignOutUser()
         {

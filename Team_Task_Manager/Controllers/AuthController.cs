@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Text;
+using Team_Task_Manager.Extesions;
+using Team_Task_Manager.Models.Entities.Permissions;
 using Team_Task_Manager.Models.Entities.User;
 using Team_Task_Manager.Services.Interfaces;
 using Team_Task_Manager.Shared;
@@ -23,7 +25,7 @@ public class AuthController : Controller
         _emailService = emailService;
     }
     public IActionResult LoginBasic() => View();
-
+    [AuthFilter(ClaimName.Permission, PermissionName.AdminPanel)]
     public IActionResult RegisterBasic()
     {
         ViewBag.Roles = _roleService.GetAllRoles();
