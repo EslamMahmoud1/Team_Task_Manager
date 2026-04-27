@@ -16,7 +16,7 @@ public class AuthFilterAttribute : Attribute, IAuthorizationFilter
         _claimValue = claimValue;
     }
     public async void OnAuthorization(AuthorizationFilterContext context)
-    {
+        {
         if (!(context.HttpContext.User.Identity?.IsAuthenticated ?? false))
         {
             context.Result = new RedirectToActionResult("Login", "Account", null);

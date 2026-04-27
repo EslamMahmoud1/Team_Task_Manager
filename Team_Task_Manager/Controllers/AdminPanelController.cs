@@ -7,6 +7,7 @@ using Team_Task_Manager.ViewModels.AdminPanel;
 
 namespace Team_Task_Manager.Controllers
 {
+    [Authorize]
     public class AdminPanelController : Controller
     {
         private readonly IAdminService _adminService;

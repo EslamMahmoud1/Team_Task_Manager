@@ -1,11 +1,16 @@
 ﻿using Mapster;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Team_Task_Manager.Extesions;
+using Team_Task_Manager.Models.Entities.Permissions;
 using Team_Task_Manager.Services.Interfaces;
 using Team_Task_Manager.ViewModels.Users;
 
 namespace Team_Task_Manager.Controllers
 {
+    [Authorize]
+    [AuthFilter(ClaimName.Permission, PermissionName.AdminPanel)]
     public class UsersController : Controller
     {
         private readonly IUsersService _usersService;

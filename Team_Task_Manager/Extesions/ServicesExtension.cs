@@ -37,6 +37,7 @@ namespace Team_Task_Manager.Extesions
             {
                 options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             });
+
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IDashboardService, DashboardService>();
             services.AddScoped<ITaskService, TaskService>();

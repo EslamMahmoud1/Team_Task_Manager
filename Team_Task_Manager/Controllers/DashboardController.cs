@@ -5,6 +5,7 @@ using Team_Task_Manager.Services.Interfaces;
 
 namespace Team_Task_Manager.Controllers
 {
+    [Authorize]
     public class DashboardController : Controller
     {
         private readonly IDashboardService _dashboard;

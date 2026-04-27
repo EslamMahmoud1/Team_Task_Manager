@@ -13,20 +13,6 @@ namespace Team_Task_Manager.Controllers
             _userService = userService;
         }
 
-        public IActionResult Index()
-        {
-            return View();
-        }
-        public IActionResult CreateUser()
-        {
-            return View();
-        }
-
-        public IActionResult CurrentUser()
-        {
-            return View();
-        }
-
 
         [HttpPost]
         public async Task<IActionResult> CreateUser(UserViewModel userViewModel)

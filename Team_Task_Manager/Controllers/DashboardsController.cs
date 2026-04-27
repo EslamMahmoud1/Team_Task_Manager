@@ -5,6 +5,7 @@ using Team_Task_Manager.Models.Entities.Permissions;
 
 namespace AspnetCoreMvcFull.Controllers;
 
+[Authorize]
 public class DashboardsController : Controller
 {
     public IActionResult Index() => View();

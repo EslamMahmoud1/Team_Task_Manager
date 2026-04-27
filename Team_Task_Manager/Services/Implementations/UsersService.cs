@@ -10,10 +10,13 @@ namespace Team_Task_Manager.Services.Implementations
     public class UsersService : IUsersService
     {
         private readonly UserManager<TaskUser> _userManager;
+        private readonly SignInManager<TaskUser> _signInManager;
 
-        public UsersService(UserManager<TaskUser> userManager)
+
+        public UsersService(UserManager<TaskUser> userManager, SignInManager<TaskUser> signInManager)
         {
             _userManager = userManager;
+            _signInManager = signInManager;
         }
 
         public async Task<IEnumerable<UserDetailsViewModel>> GetAllAsync()
@@ -52,6 +55,8 @@ namespace Team_Task_Manager.Services.Implementations
             user.UserRoleId = userEdit.UserRoleId;
 
             var result = await _userManager.UpdateAsync(user);
+            //await _userManager.UpdateSecurityStampAsync(user);
+            await _signInManager.RefreshSignInAsync(user);
 
             return result.Succeeded;
         }
