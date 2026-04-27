@@ -1,3 +1,5 @@
+@using Team_Task_Manager.ViewModels.User
+@model UserViewModel
 @{
     Layout = "_BlankLayout";
     ViewData["Title"] = "Register Basic - Pages";
@@ -28,18 +30,20 @@
 
           <form asp-controller="User" asp-action="CreateUser" method="POST">
             <div class="mb-6">
-              <label for="username" class="form-label">Username</label>
-              <input type="text" class="form-control" id="username" name="Name" placeholder="Enter your username" autofocus />
+              <label asp-for="Name" class="form-label">Username</label>
+              <input asp-for="Name" class="form-control" placeholder="Enter your UserName" autofocus />
+              <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="mb-6">
-              <label for="email" class="form-label">Email</label>
-              <input type="text" class="form-control" id="email" name="Email" placeholder="Enter your email" />
+              <label asp-for="Email" class="form-label">Email</label>
+              <input asp-for="Email" class="form-control" placeholder="Enter your email" />
+              <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             <div class="form-password-toggle">
-              <label class="form-label" for="password">Password</label>
+              <label asp-for="Password" class="form-label">Password</label>
               <div class="input-group input-group-merge">
-                <input type="password" id="password" class="form-control" name="Password" placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;" aria-describedby="password" />
-                <span class="input-group-text cursor-pointer"><i class="icon-base bx bx-hide"></i></span>
+                <input asp-for="Password" class="form-control" placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;" aria-describedby="password" />
+                <span asp-validation-for="Password" class="input-group-text cursor-pointer"></span>
               </div>
             </div>
             <div class="mb-6">
@@ -75,3 +79,8 @@
     </div>
   </div>
 </div>
+@section Scripts {
+    <script src="~/vendor/libs/jquery/jquery.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+}
