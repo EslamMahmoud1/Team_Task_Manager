@@ -23,7 +23,7 @@ namespace Team_Task_Manager.Controllers
                 if (user is null) return BadRequest("Can not Create User");
                 //Email Service Usage
             }
-            return RedirectToAction("LoginBasic", "Auth");
+            return RedirectToAction("Index", "Dashboards");
         }
         [HttpPost]
         public async Task<IActionResult> CurrentUser(SignInViewModel signInUser)

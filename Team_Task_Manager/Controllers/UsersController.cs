@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Team_Task_Manager.Extesions;
 using Team_Task_Manager.Models.Entities.Permissions;
+using Team_Task_Manager.Models.Entities.User;
 using Team_Task_Manager.Services.Interfaces;
+using Team_Task_Manager.ViewModels.User;
 using Team_Task_Manager.ViewModels.Users;
 
 namespace Team_Task_Manager.Controllers
@@ -35,6 +37,7 @@ namespace Team_Task_Manager.Controllers
         {
             var userResult = await _usersService.GetByIdAsync(id);
             var detailedUser = userResult.Value.Adapt<UserDetailsViewModel>();
+            
             return View(detailedUser);
         }
 
@@ -49,13 +52,12 @@ namespace Team_Task_Manager.Controllers
         public async Task<ActionResult> Edit(long id)
         {
             var user = await _usersService.GetByIdAsync(id);
-            var roles = _roleService.GetAllRoles()
-                        .Select(r => new SelectListItem
-                        {
-                            Value = r.Id.ToString(),
-                            Text = r.Name
-                        })
-                        .ToList();
+            var rolesList = await _roleService.GetAllRolesAsync();
+            var roles = rolesList.Select(r => new SelectListItem
+            {
+                Value = r.Id.ToString(),
+                Text = r.Name
+            }).ToList();
 
             ViewBag.UserRoles = roles;
             return View(user.Value);
@@ -70,7 +72,7 @@ namespace Team_Task_Manager.Controllers
             {
                 return RedirectToAction(nameof(Index));
             }
-            ViewBag.UserRoles = _roleService.GetAllRoles();
+            ViewBag.UserRoles = await _roleService.GetAllRolesAsync();
             return View(userEdit);
         }
 

@@ -53,6 +53,7 @@ namespace Team_Task_Manager.Services.Implementations
             user.Email = userEdit.Email;
             user.UserName = userEdit.UserName;
             user.UserRoleId = userEdit.UserRoleId;
+            user.PhoneNumber = userEdit.PhoneNumber;
 
             var result = await _userManager.UpdateAsync(user);
             //await _userManager.UpdateSecurityStampAsync(user);

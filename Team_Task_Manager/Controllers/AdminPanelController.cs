@@ -18,11 +18,11 @@ namespace Team_Task_Manager.Controllers
             _roleService = roleService;
         }
         [AuthFilter(ClaimName.Permission, PermissionName.AdminPanel)]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             var viewModel = new AdminPanelIndexViewModel
             {
-                Roles = _roleService.GetAllRoles().ToList(),
+                Roles = await _roleService.GetAllRolesAsync(),
                 Permissions = _adminService.GetAllPermissions().ToList(),
             };
             return View(viewModel);
@@ -39,7 +39,7 @@ namespace Team_Task_Manager.Controllers
             if (roleId.Value == 0) return BadRequest("Role Already Exists");
 
             await _adminService.AssignRolePermissions(RoleName, selectedPermissions);
-            return RedirectToAction(nameof(Index),"Dashboards");
+            return RedirectToAction("Index","Role");
         }
     }
 }

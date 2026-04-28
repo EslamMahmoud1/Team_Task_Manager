@@ -26,9 +26,9 @@ public class AuthController : Controller
     }
     public IActionResult LoginBasic() => View();
     [AuthFilter(ClaimName.Permission, PermissionName.AdminPanel)]
-    public IActionResult RegisterBasic()
+    public async Task<IActionResult> RegisterBasic()
     {
-        ViewBag.Roles = _roleService.GetAllRoles();
+        ViewBag.Roles = await _roleService.GetAllRolesAsync();
         return View();
     }
     public IActionResult AccessDenied() => View();

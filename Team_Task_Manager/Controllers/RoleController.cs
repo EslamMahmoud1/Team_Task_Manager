@@ -1,7 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Team_Task_Manager.Models.Entities.Role;
-using Team_Task_Manager.Services.Implementations;
 using Team_Task_Manager.Services.Interfaces;
 using Team_Task_Manager.ViewModels.Role;
 
@@ -16,101 +13,54 @@ namespace Team_Task_Manager.Controllers
             _roleService = roleService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var roles = _roleService.GetAllRoles();
-            var rolesSelectMenu = new RoleIndexViewModel
-            {
-                Roles = roles.Select(r => new SelectListItem
-                {
-                    Value = r.Id.ToString(),
-                    Text = r.Name
-                }).ToList()
-            };
-
-            rolesSelectMenu.Roles.Insert(0, new SelectListItem
-            {
-                Value = "0",
-                Text = "-- Select Role --"
-            });
-            return View(rolesSelectMenu);
+            var roles = await _roleService.GetAllRolesAsync();
+            return View(roles);
         }
         [HttpPost]
-        public async Task<IActionResult> GetPermissionsForRole(long SelectedRoleId)
+        public IActionResult Create()
         {
-            var roles = _roleService.GetAllRoles();
-
-            var rolesSelectMenu = new RoleIndexViewModel
+            return RedirectToAction("Index", "AdminPanel");
+        }
+        public async Task<IActionResult> Details(long id)
+        {
+            var role = await _roleService.GetRoleById(id);
+            var permissions = await _roleService.GetRolePermissions(id);
+            var roleDetails = new RoleDetailsViewModel
             {
-                SelectedRoleId = SelectedRoleId,
-                Roles = roles.Select(r => new SelectListItem
-                {
-                    Value = r.Id.ToString(),
-                    Text = r.Name
-                }).ToList()
+                Id = id,
+                Name = role.Name ?? "",
+                Permissions = permissions
             };
-
-            rolesSelectMenu.Roles.Insert(0, new SelectListItem
-            {
-                Value = "0",
-                Text = "-- Select Role --"
-            });
-
-            var permissions = await _roleService.GetRolePermissions(SelectedRoleId);
-
-            rolesSelectMenu.Permissions = permissions.Select(p => p.Name.ToString()).ToList();
-
-            return View("Index", rolesSelectMenu);
+            return View(roleDetails);
         }
-        
 
-        [HttpPost]
-        public IActionResult Edit(UserRoles role)
+        public async Task<ActionResult> Edit(long id)
         {
-            _roleService.EditRole(role);
-            return RedirectToAction(nameof(Index), "Dashboard");
+            var role = await _roleService.GetRoleById(id);
 
-        }
-        public IActionResult DeleteRoles()
-        {
-            var roles = _roleService.GetAllRoles();
-            var rolesSelectMenu = new RoleIndexViewModel
-            {
-                Roles = roles.Select(r => new SelectListItem
-                {
-                    Value = r.Id.ToString(),
-                    Text = r.Name
-                }).ToList()
-            };
-
-            rolesSelectMenu.Roles.Insert(0, new SelectListItem
-            {
-                Value = "0",
-                Text = "-- Select Role --"
-            });
-            return View(rolesSelectMenu);
-        }
-        public async Task<IActionResult> Delete(long SelectedRoleId)
-        {
-            var roles = _roleService.GetAllRoles();
-            var role = roles.FirstOrDefault(r => r.Id == SelectedRoleId);
             return View(role);
         }
         [HttpPost]
-        public IActionResult DeleteConfirmed(long Id)
+        public async Task<IActionResult> Edit(RoleEditViewModel roleEdit)
         {
-            
-            try
-            {
-                _roleService.DeleteRole(Id);
-                return RedirectToAction(nameof(Index), "Role");
+            var result = await _roleService.EditRole(roleEdit);
+            if (!result.IsSuccess) return Conflict(result.Errors);
+            return RedirectToAction(nameof(Index), "Dashboards");
 
-            }
-            catch (Exception ex)
-            {
-
-                throw new Exception("An error occurred while deleting the role.", ex);
-            }
+        }
+        public async Task<IActionResult> Delete(long id)
+        {
+            var role = await _roleService.GetRoleById(id);
+            return View(role);
+        }
+        [HttpPost]
+        public async Task<IActionResult> DeleteConfirmed(long id)
+        {
+            var result = await _roleService.DeleteRole(id);
+            if (!result.IsSuccess) return Conflict(result.Errors);
+            return RedirectToAction(nameof(Index), "Role");
         }
     }
 }
