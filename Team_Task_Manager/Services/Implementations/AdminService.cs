@@ -17,20 +17,8 @@ namespace Team_Task_Manager.Services.Implementations
         public async Task AssignRolePermissions(string roleName, List<Permission> permissions)
         {
             var role = await _context.TaskUserRoles.Where(r => r.Name == roleName).FirstOrDefaultAsync();
-            if(role == null)
-            {
-                await _context.AddAsync(new UserRoles { Name = roleName });
 
-            }
-            var permissionNames = permissions.Select(p => p.Name).ToList();
-            var dbPermissions = await _context.Permissions
-                                    .Where(p => permissionNames.Contains(p.Name))
-                                    .ToListAsync();
-
-            var old = _context.RolePermissions.Where(r => r.RoleId == role.Id);
-            _context.RolePermissions.RemoveRange(old);
-
-            foreach (var permission in dbPermissions)
+            foreach (var permission in permissions)
             {
                 await _context.RolePermissions.AddAsync(new RolePermission { Role = role, Permission = permission });
             }
@@ -41,7 +29,10 @@ namespace Team_Task_Manager.Services.Implementations
         {
             return _context.Permissions.ToList();
         }
-        
-        
+
+        public List<Permission> GetAllPermissionsByIds(List<long> SelectedPermissionIds)
+        {
+            return GetAllPermissions().Where(p => SelectedPermissionIds.Contains(p.Id)).ToList();
+        }
     }
 }

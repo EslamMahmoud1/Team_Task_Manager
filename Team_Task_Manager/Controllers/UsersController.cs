@@ -4,9 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Team_Task_Manager.Extesions;
 using Team_Task_Manager.Models.Entities.Permissions;
-using Team_Task_Manager.Models.Entities.User;
 using Team_Task_Manager.Services.Interfaces;
-using Team_Task_Manager.ViewModels.User;
 using Team_Task_Manager.ViewModels.Users;
 
 namespace Team_Task_Manager.Controllers
@@ -37,7 +35,7 @@ namespace Team_Task_Manager.Controllers
         {
             var userResult = await _usersService.GetByIdAsync(id);
             var detailedUser = userResult.Value.Adapt<UserDetailsViewModel>();
-            
+
             return View(detailedUser);
         }
 
@@ -52,15 +50,24 @@ namespace Team_Task_Manager.Controllers
         public async Task<ActionResult> Edit(long id)
         {
             var user = await _usersService.GetByIdAsync(id);
+            if(user.Value is null) return NotFound(user.Errors);
+
             var rolesList = await _roleService.GetAllRolesAsync();
             var roles = rolesList.Select(r => new SelectListItem
             {
                 Value = r.Id.ToString(),
                 Text = r.Name
             }).ToList();
-
             ViewBag.UserRoles = roles;
-            return View(user.Value);
+            var userEdit = new UserEditViewModel()
+            {
+                Id = user.Value.Id,
+                Email = user.Value.Email,
+                UserName = user.Value.UserName,
+                UserRoleId = user.Value.UserRoleId,
+                PhoneNumber = user.Value.PhoneNumber
+            };
+            return View(userEdit);
         }
 
         // POST: UsersController/Edit/5

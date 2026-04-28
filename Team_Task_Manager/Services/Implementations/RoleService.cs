@@ -13,13 +13,11 @@ namespace Team_Task_Manager.Services.Implementations
     public class RoleService : IRoleService
     {
         private readonly RoleManager<UserRoles> _roleManager;
-        private readonly UserManager<TaskUser> _userManager;
         private readonly TaskAppDbContext _context;
 
-        public RoleService(RoleManager<UserRoles> roleManager, UserManager<TaskUser> userManager, TaskAppDbContext context)
+        public RoleService(RoleManager<UserRoles> roleManager, TaskAppDbContext context)
         {
             _roleManager = roleManager;
-            _userManager = userManager;
             _context = context;
         }
 

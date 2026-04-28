@@ -31,12 +31,13 @@ namespace Team_Task_Manager.Controllers
         [HttpPost]
         public async Task<IActionResult> AssignPermissionsForRole(string RoleName, List<long> SelectedPermissionIds)
         {
-            var selectedPermissions = _adminService.GetAllPermissions()
-                .Where(p => SelectedPermissionIds.Contains(p.Id))
-                .ToList();
+            if (SelectedPermissionIds == null || !SelectedPermissionIds.Any())
+                return BadRequest("No permissions selected");
 
-            var roleId = await _roleService.CreateRole(RoleName);
-            if (roleId.Value == 0) return BadRequest("Role Already Exists");
+            var selectedPermissions = _adminService.GetAllPermissionsByIds(SelectedPermissionIds);
+
+            var role = await _roleService.CreateRole(RoleName);
+            if (!role.IsSuccess) return Conflict(role.Errors);
 
             await _adminService.AssignRolePermissions(RoleName, selectedPermissions);
             return RedirectToAction("Index","Role");

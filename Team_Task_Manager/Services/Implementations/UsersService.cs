@@ -55,8 +55,11 @@ namespace Team_Task_Manager.Services.Implementations
             user.UserRoleId = userEdit.UserRoleId;
             user.PhoneNumber = userEdit.PhoneNumber;
 
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var NewPassword = await _userManager.ResetPasswordAsync(user, token, userEdit.Password);
+
             var result = await _userManager.UpdateAsync(user);
-            //await _userManager.UpdateSecurityStampAsync(user);
+
             await _signInManager.RefreshSignInAsync(user);
 
             return result.Succeeded;
