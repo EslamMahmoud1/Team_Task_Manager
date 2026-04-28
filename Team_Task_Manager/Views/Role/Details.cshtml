@@ -3,7 +3,13 @@
 @{
     ViewData["Title"] = "Details";
 }
-
+@section VendorStyles {
+    <link href="https://kendo.cdn.telerik.com/themes/13.1.1/default/default-main.css" rel="stylesheet" />
+}
+@section VendorScripts {
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="~/lib/kendo-ui/js/kendo.all.min.js"></script>
+}
 <h1>Details</h1>
 
 <div>
@@ -23,6 +29,105 @@
             @Html.DisplayFor(model => model.Name)
         </dd>
     </dl>
+</div>
+<div class="treeview-flex">
+    <div id="treeview-kendo"></div>
+</div>
+<script>
+    var permissions = @Html.Raw(Json.Serialize(Model.Permissions.Select(p => p.Id)));
+</script>
+<div>
+    @section PageScripts
+    {
+        <script id="treeview" type="text/kendo-ui-template">
+
+                # if (!item.items && item.spriteCssClass) { #
+                <span class="k-treeview-leaf-text">#: item.text #</span>
+                <span class='kendo-icon'> #= kendo.ui.icon({ icon: 'x' }) # </span>
+                # } else if(!item.items && !item.spriteCssClass) { #
+                <span class="k-sprite pdf"></span>
+                <span class="k-treeview-leaf-text">#: item.text #</span>
+                <span class='telerik-icon'>#= kendo.ui.icon({ icon: 'x' }) #</span>
+                # } else if (item.items && item.spriteCssClass){ #
+                <span class="k-treeview-leaf-text">#: item.text #</span>
+                # } else { #
+                <span class="k-sprite folder"></span>
+                <span class="k-treeview-leaf-text">#: item.text #</span>
+                # } #
+        </script>
+
+            
+        <script src="~/js/ShowRoleDetails.js" asp-append-version="true"></script>
+    }
+    @section PageStyles
+    {
+        <style>
+
+                
+                #demo-section-title h3 {
+                    margin-bottom: 2em;
+                    text-align: center;
+                }
+
+                .treeview-flex h4 {
+                    color: #656565;
+                    margin-bottom: 1em;
+                    text-align: center;
+                }
+
+                #demo-section-title {
+                    width: 100%;
+                    flex: auto;
+                }
+
+                .treeview-flex {
+                    flex: 1;
+                    -ms-flex: 1 0 auto;
+                }
+
+                .k-treeview {
+                    max-width: 240px;
+                    margin: 0 auto;
+                }
+
+                #treeview-kendo .k-sprite {
+                    background-image: url("../content/web/treeview/coloricons-sprite.png");
+                }
+
+                #treeview-telerik .k-sprite {
+                    background-image: url("../content/web/treeview/coloricons-sprite.png");
+                }
+
+                .demo-section {
+                    margin-bottom: 5px;
+                    overflow: auto;
+                    display: flex;
+                    justify-content: space-between;
+                    flex-wrap: wrap;
+                }
+
+                .rootfolder {
+                    background-position: 0 0;
+                }
+
+                .folder {
+                    background-position: 0 -16px;
+                }
+
+                .pdf {
+                    background-position: 0 -32px;
+                }
+
+                .html {
+                    background-position: 0 -48px;
+                }
+
+                .image {
+                    background-position: 0 -64px;
+                }
+
+        </style>
+    }
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
