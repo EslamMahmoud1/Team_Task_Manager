@@ -32,8 +32,8 @@
   @* ! Full version menu-items *@
   <ul class="menu-inner py-1">
       <!--Admin-->
-
-        @if (PermissionHelper.HasPermission(User, PermissionName.AdminPanel))
+        @await Component.InvokeAsync("NavBar")
+        @* @if (PermissionHelper.HasPermission(User, PermissionName.AdminPanel))
         {
             <li class='menu-item@(currentPage == "/Cards/Basic" ? " active" : "")'>
                 <a asp-controller="Users" asp-action="Index" class="menu-link">
@@ -256,7 +256,7 @@
                 }
 
             </ul>
-        </li>
+        </li> *@
 
     
     

@@ -5,15 +5,15 @@ namespace Team_Task_Manager.Shared
 {
     public class PermissionHelper
     {
-        public static bool HasPermission(ClaimsPrincipal user, PermissionName permission)
+        public static bool HasPermission(List<string> userClaims, PermissionName permission)
         {
-            return user.Claims.Any(c =>
-                c.Type == "Permission" && c.Value == permission.ToString());
+            return userClaims.Any(c =>
+                c == permission.ToString());
         }
 
-        public static bool HasAnyPermission(ClaimsPrincipal user, PermissionName[] permissions)
+        public static bool HasAnyPermission(List<string> userClaims, PermissionName[] permissions)
         {
-            return permissions.Any(permission => HasPermission(user, permission));
+            return permissions.Any(permission => HasPermission(userClaims, permission));
         }
     }
 }
