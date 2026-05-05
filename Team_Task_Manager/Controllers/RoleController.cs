@@ -1,9 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Team_Task_Manager.Extesions;
+using Team_Task_Manager.Models.Entities.Permissions;
 using Team_Task_Manager.Services.Interfaces;
 using Team_Task_Manager.ViewModels.Role;
 
 namespace Team_Task_Manager.Controllers
 {
+    [PermissionAuthFilter(PermissionName.AdminPanel)]
+
     public class RoleController : Controller
     {
         private readonly IRoleService _roleService;
@@ -43,12 +47,11 @@ namespace Team_Task_Manager.Controllers
             return View(role);
         }
         [HttpPost]
-        public async Task<IActionResult> Edit(RoleEditViewModel roleEdit)
+        public async Task<IActionResult> Edit(string RoleName, List<long> SelectedPermissionIds)
         {
-            var result = await _roleService.EditRole(roleEdit);
+            var result = await _roleService.EditRole(RoleName, SelectedPermissionIds);
             if (!result.IsSuccess) return Conflict(result.Errors);
-            return RedirectToAction(nameof(Index), "Dashboards");
-
+            return Json(new { success = true });
         }
         public async Task<IActionResult> Delete(long id)
         {

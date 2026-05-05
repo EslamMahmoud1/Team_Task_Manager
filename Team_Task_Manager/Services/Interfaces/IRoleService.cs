@@ -10,7 +10,7 @@ namespace Team_Task_Manager.Services.Interfaces
         public Task<UserRoles> GetRoleById (long roleId);
         public Task<Result<long>> CreateRole (string roleName);
         public Task<Result<UserRoles>> DeleteRole (long roleId);
-        public Task<Result<UserRoles>> EditRole (RoleEditViewModel EditRole);
+        public Task<Result<UserRoles>> EditRole (string RoleName, List<long> SelectedPermissionIds);
         public Task<List<UserRoles>> GetAllRolesAsync();
         public Task<List<Permission>> GetRolePermissions(long roleId);
 

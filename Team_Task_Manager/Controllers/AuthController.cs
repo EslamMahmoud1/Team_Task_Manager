@@ -25,7 +25,6 @@ public class AuthController : Controller
         _emailService = emailService;
     }
     public IActionResult LoginBasic() => View();
-    [AuthFilter(ClaimName.Permission, PermissionName.AdminPanel)]
     public async Task<IActionResult> RegisterBasic()
     {
         ViewBag.Roles = await _roleService.GetAllRolesAsync();

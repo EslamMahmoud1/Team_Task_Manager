@@ -1,16 +1,14 @@
 ﻿using Mapster;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Team_Task_Manager.Extesions;
 using Team_Task_Manager.Models.Entities.Permissions;
 using Team_Task_Manager.Services.Interfaces;
 using Team_Task_Manager.ViewModels.Users;
 
 namespace Team_Task_Manager.Controllers
 {
-    [Authorize]
-    [AuthFilter(ClaimName.Permission, PermissionName.AdminPanel)]
+    [PermissionAuthFilter(PermissionName.AdminPanel)]
+
     public class UsersController : Controller
     {
         private readonly IUsersService _usersService;
@@ -50,7 +48,7 @@ namespace Team_Task_Manager.Controllers
         public async Task<ActionResult> Edit(long id)
         {
             var user = await _usersService.GetByIdAsync(id);
-            if(user.Value is null) return NotFound(user.Errors);
+            if (user.Value is null) return NotFound(user.Errors);
 
             var rolesList = await _roleService.GetAllRolesAsync();
             var roles = rolesList.Select(r => new SelectListItem

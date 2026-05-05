@@ -5,20 +5,18 @@ using Team_Task_Manager.Models.Entities.Permissions;
 
 namespace AspnetCoreMvcFull.Controllers;
 
-[Authorize]
+
 public class DashboardsController : Controller
 {
+    [PermissionAuthFilter(PermissionName.CRM)]
     public IActionResult Index() => View();
-
-    [AuthFilter(ClaimName.Permission, PermissionName.CRM)]
+    [PermissionAuthFilter(PermissionName.CRM)]
     public IActionResult CRM() => View();
-
-    [AuthFilter(ClaimName.Permission, PermissionName.eCommerce)]
+    [PermissionAuthFilter(PermissionName.eCommerce)]
     public IActionResult eCommerce() => View();
 
-    [AuthFilter(ClaimName.Permission, PermissionName.Logistics)]
+    [PermissionAuthFilter(PermissionName.Logistics)]
     public IActionResult Logistics() => View();
-
-    [AuthFilter(ClaimName.Permission, PermissionName.Academy)]
+    [PermissionAuthFilter(PermissionName.Academy)]
     public IActionResult Academy() => View();
 }

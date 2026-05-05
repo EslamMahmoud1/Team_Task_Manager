@@ -1,4 +1,6 @@
-﻿@model IEnumerable<UserRoles>
+﻿<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+@model IEnumerable<UserRoles>
 
 @{
     ViewData["Title"] = "Index";
@@ -34,11 +36,36 @@
 
            
                 <td>
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    <a asp-action="Details" class="btn btn-primary" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Edit" class="btn btn-warning" asp-route-id="@item.Id">Edit</a> |
+                    <form asp-controller="Role"
+                          asp-action="DeleteConfirmed"
+                          asp-route-id="@item.Id"
+                          method="post"
+                          style="display:inline;">
+                        <button type="button"
+                                class="btn btn-danger"
+                                onclick="confirmDelete(this)">
+                            Delete
+                        </button>
+                    </form>
                 </td>
             </tr>
         }
     </tbody>
 </table>
+<script>
+    function confirmDelete(btn) {
+    Swal.fire({
+    title: 'Are you sure?',
+    text: 'This will delete the role.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+    if (result.isConfirmed) {
+    btn.closest('form').submit(); // 🔥 POST happens here
+    }
+    });
+    }
+</script>

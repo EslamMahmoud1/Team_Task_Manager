@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Team_Task_Manager.Data;
 using Team_Task_Manager.Models.Entities.Permissions;
 using Team_Task_Manager.Models.Entities.Role;
-using Team_Task_Manager.Models.Entities.User;
 using Team_Task_Manager.Services.Interfaces;
 using Team_Task_Manager.Shared;
 using Team_Task_Manager.ViewModels.Role;
@@ -37,7 +36,7 @@ namespace Team_Task_Manager.Services.Implementations
         public async Task<Result<UserRoles>> DeleteRole(long id)
         {
             var role = await _roleManager.FindByIdAsync(id.ToString());
-            if(role is null) return Result<UserRoles>.Failure(new List<string> { "Role not found." });
+            if (role is null) return Result<UserRoles>.Failure(new List<string> { "Role not found." });
 
             var usersInRole = await _context.TaskUsers.Where(u => u.UserRoleId == id).ToListAsync();
             if (usersInRole.Any()) return Result<UserRoles>.Failure(new List<string> { "Cannot delete role with assigned users." });
@@ -48,13 +47,44 @@ namespace Team_Task_Manager.Services.Implementations
             return Result<UserRoles>.Success(role);
         }
 
-        public async Task<Result<UserRoles>> EditRole(RoleEditViewModel EditRole)
+        public async Task<Result<UserRoles>> EditRole(string RoleName, List<long> SelectedPermissionIds)
         {
-            var role = await _roleManager.FindByIdAsync(EditRole.Id.ToString());
+            var role = await _roleManager.FindByNameAsync(RoleName);
             if (role is null) return Result<UserRoles>.Failure(new List<string> { "Role not found." });
+            
+            if(SelectedPermissionIds.Any())
+            {
+                var roleId = role.Id;
 
-            role.Name = EditRole.Name;
-            role.NormalizedName = EditRole.Name.ToUpper();
+                // 1. Get current relations
+                var existing = await _context.RolePermissions.Include(rp => rp.Permission)
+                    .Where(rp => rp.RoleId == roleId)
+                    .ToListAsync();
+
+                // 2. Extract existing PermissionIds
+                var existingIds = existing.Select(rp => rp.PermissionId).ToList();
+
+                // 3. Determine what to ADD
+                var toAdd = SelectedPermissionIds
+                    .Except(existingIds)
+                    .Select(pid => new RolePermission
+                    {
+                        Permission = _context.Permissions.Find(pid),
+                        Role = role
+                    });
+
+                // 4. Determine what to REMOVE
+                var toRemove = existing
+                    .Where(rp => !SelectedPermissionIds.Contains(rp.PermissionId));
+
+                // 5. Apply changes
+                _context.RolePermissions.RemoveRange(toRemove);
+                await _context.RolePermissions.AddRangeAsync(toAdd);
+                // 6. Save
+            }
+
+            role.Name = RoleName;
+            role.NormalizedName = RoleName.ToUpper();
 
             var result = await _roleManager.UpdateAsync(role);
             if (!result.Succeeded) return Result<UserRoles>.Failure(result.Errors.Select(e => e.Description).ToList());

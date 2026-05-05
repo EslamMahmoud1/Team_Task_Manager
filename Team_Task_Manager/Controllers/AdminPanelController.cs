@@ -1,13 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Team_Task_Manager.Extesions;
+﻿using Microsoft.AspNetCore.Mvc;
 using Team_Task_Manager.Models.Entities.Permissions;
 using Team_Task_Manager.Services.Interfaces;
 using Team_Task_Manager.ViewModels.AdminPanel;
 
 namespace Team_Task_Manager.Controllers
 {
-    [Authorize]
+    [PermissionAuthFilter(PermissionName.AdminPanel)]
     public class AdminPanelController : Controller
     {
         private readonly IAdminService _adminService;
@@ -17,7 +15,6 @@ namespace Team_Task_Manager.Controllers
             _adminService = adminService;
             _roleService = roleService;
         }
-        [AuthFilter(ClaimName.Permission, PermissionName.AdminPanel)]
         public async Task<IActionResult> Index()
         {
             var viewModel = new AdminPanelIndexViewModel
@@ -40,7 +37,7 @@ namespace Team_Task_Manager.Controllers
             if (!role.IsSuccess) return Conflict(role.Errors);
 
             await _adminService.AssignRolePermissions(RoleName, selectedPermissions);
-            return RedirectToAction("Index","Role");
+            return Json(new { success = true });
         }
     }
 }
