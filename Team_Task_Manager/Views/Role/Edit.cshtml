@@ -8,6 +8,7 @@
 }
 @{
     ViewData["Title"] = "Edit";
+    var selectedIds = ViewBag.selectedPermissions as List<long>;
 }
 
 <div style="margin-bottom: 15px;">
@@ -48,6 +49,9 @@
 
             
         <script src="~/js/EditRole.js" asp-append-version="true"></script>
+        <script>
+            var selectedPermissions = @Html.Raw(Json.Serialize(selectedIds ?? new List<long>()));
+        </script>
     }
     @section PageStyles
     {

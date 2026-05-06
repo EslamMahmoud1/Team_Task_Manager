@@ -42,9 +42,10 @@ namespace Team_Task_Manager.Controllers
 
         public async Task<ActionResult> Edit(long id)
         {
-            var role = await _roleService.GetRoleById(id);
-
-            return View(role);
+            var model = await _roleService.GetRoleById(id);
+            var permissions = await _roleService.GetRolePermissions(id);
+            ViewBag.selectedPermissions = permissions.Select(p => p.Id).ToList();
+            return View(model);
         }
         [HttpPost]
         public async Task<IActionResult> Edit(string RoleName, List<long> SelectedPermissionIds)
