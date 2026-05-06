@@ -45,6 +45,7 @@
                           style="display:inline;">
                         <button type="button"
                                 class="btn btn-danger"
+                                data-role-id="@item.Id"
                                 onclick="confirmDelete(this)">
                             Delete
                         </button>
@@ -56,6 +57,89 @@
 </table>
 <script>
     function confirmDelete(btn) {
+    var roleId = btn.getAttribute("data-role-id");
+    var form = btn.closest('form');
+
+    $.get('/Role/HasUsers', { roleId: roleId }, function(res) {
+
+    if (res.hasUsers) {
+
+    $.get('/Role/GetAllRoles', function(roles) {
+
+    let options = '';
+    roles.forEach(r => {
+    if (r.id != roleId) {
+    options += `<option value="${r.id}">${r.name}</option>`;
+    }
+    });
+
+    Swal.fire({
+    title: 'Role has assigned users!',
+    html: `
+    <p style="margin-bottom:10px;">
+    ⚠️ This role has <b>${res.count}</b> user(s).
+    </p>
+    <p>Select a new role for them:</p>
+    <select id="newRole" class="swal2-select">
+    ${options}
+    </select>
+    `,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Reassign & Delete',
+    confirmButtonColor: '#d33',
+    preConfirm: () => {
+    const newRoleId = document.getElementById('newRole').value;
+
+    if (!newRoleId) {
+    Swal.showValidationMessage('Please select a role');
+    }
+
+    return newRoleId;
+    }
+    }).then((result) => {
+
+    if (result.isConfirmed) {
+
+    Swal.fire({
+    title: 'Processing...',
+    text: 'Reassigning users...',
+    allowOutsideClick: false,
+    didOpen: () => {
+    Swal.showLoading();
+    }
+    });
+
+    $.ajax({
+    url: '/Role/ReassignUsersAndDelete',
+    type: 'POST',
+    data: {
+    roleId: roleId,
+    newRoleId: result.value
+    },
+    success: function() {
+    Swal.fire(
+    'Done!',
+    `${res.count} user(s) reassigned successfully.`,
+    'success'
+    ).then(() => location.reload());
+    },
+    error: function() {
+    Swal.fire(
+    'Error!',
+    'Something went wrong.',
+    'error'
+    );
+    }
+    });
+    }
+    });
+
+    });
+
+    } else {
+
+    // normal delete
     Swal.fire({
     title: 'Are you sure?',
     text: 'This will delete the role.',
@@ -64,8 +148,12 @@
     confirmButtonText: 'Yes, delete it!'
     }).then((result) => {
     if (result.isConfirmed) {
-    btn.closest('form').submit(); // 🔥 POST happens here
+    form.submit();
     }
+    });
+
+    }
+
     });
     }
 </script>

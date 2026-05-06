@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 using Team_Task_Manager.Data;
 using Team_Task_Manager.Models.Entities.Permissions;
 using Team_Task_Manager.Models.Entities.Role;
+using Team_Task_Manager.Models.Entities.User;
 using Team_Task_Manager.Services.Interfaces;
 using Team_Task_Manager.Shared;
-using Team_Task_Manager.ViewModels.Role;
 
 namespace Team_Task_Manager.Services.Implementations
 {
@@ -51,8 +52,8 @@ namespace Team_Task_Manager.Services.Implementations
         {
             var role = await _roleManager.FindByNameAsync(RoleName);
             if (role is null) return Result<UserRoles>.Failure(new List<string> { "Role not found." });
-            
-            if(SelectedPermissionIds.Any())
+
+            if (SelectedPermissionIds.Any())
             {
                 var roleId = role.Id;
 
@@ -96,6 +97,12 @@ namespace Team_Task_Manager.Services.Implementations
             return await _roleManager.Roles.ToListAsync();
         }
 
+        public async Task<List<TaskUser>> HasUsers(long roleId)
+        {
+            var users = await _context.TaskUsers.Where(u => u.UserRoleId == roleId).ToListAsync();
+            return users;
+        }
+
         public async Task<UserRoles> GetRoleById(long roleId)
         {
             return await _roleManager.FindByIdAsync(roleId.ToString());
@@ -106,6 +113,27 @@ namespace Team_Task_Manager.Services.Implementations
                 .Select(p => p.Permission).ToListAsync();
 
             return rolePermissions;
+        }
+
+        public async Task<Result<bool>> ReassignUsersAndDelete(long roleId, long newRoleId)
+        {
+            var role = await GetRoleById(roleId);
+            if(role == null) return Result<bool>.Failure(new List<string> { "Role not found." });
+
+            var newRole = await GetRoleById(newRoleId);
+            if (newRole == null) return Result<bool>.Failure(new List<string> { "New role not found." });
+
+            var users = await _context.TaskUsers.Where(u => u.UserRoleId == roleId).ToListAsync();
+
+            foreach (var user in users)
+            {
+                user.UserRoleId = newRoleId;
+            }
+            await _context.SaveChangesAsync();
+
+            var result = await _roleManager.DeleteAsync(role);
+
+            return Result<bool>.Success(result.Succeeded);
         }
     }
 }

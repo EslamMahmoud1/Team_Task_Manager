@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Team_Task_Manager.Extesions;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Team_Task_Manager.Models.Entities.Permissions;
 using Team_Task_Manager.Services.Interfaces;
 using Team_Task_Manager.ViewModels.Role;
@@ -64,6 +64,34 @@ namespace Team_Task_Manager.Controllers
             var result = await _roleService.DeleteRole(id);
             if (!result.IsSuccess) return Conflict(result.Errors);
             return RedirectToAction(nameof(Index), "Role");
+        }
+        public async Task<IActionResult> HasUsers(long roleId)
+        {
+            var role = await _roleService.GetRoleById(roleId);
+            if (role == null) return Json(new { hasUsers = false, count = 0 });
+
+            var users = await _roleService.HasUsers(roleId);
+
+            return Json(new
+            {
+                hasUsers = users.Any(),
+                count = users.Count
+            });
+        }
+
+        public async Task<IActionResult> GetAllRoles()
+        {
+            var roles = await _roleService.GetAllRolesAsync();
+            return Json(roles);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ReassignUsersAndDelete(long roleId, long newRoleId)
+        {
+            var result = await _roleService.ReassignUsersAndDelete(roleId, newRoleId);
+            if (!result.IsSuccess) return Conflict(result.Errors);
+            return Json(new { success = true });
+
         }
     }
 }
