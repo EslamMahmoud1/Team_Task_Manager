@@ -191,7 +191,9 @@ namespace Team_Task_Manager.Services.Implementations
             else if (vm.LastName.Length > 50)
                 errors["LastName"] = "Max 50 characters.";
 
-            if (!string.IsNullOrWhiteSpace(vm.Phone) &&
+            if (string.IsNullOrWhiteSpace(vm.Phone))
+                errors["Phone"] = "Phone number is required.";
+            else if (!string.IsNullOrWhiteSpace(vm.Phone) &&
                 !System.Text.RegularExpressions.Regex.IsMatch(vm.Phone, @"^\+?[\d\s\-().]{7,20}$"))
                 errors["Phone"] = "Enter a valid phone number.";
 
@@ -269,7 +271,9 @@ namespace Team_Task_Manager.Services.Implementations
                 if (string.IsNullOrWhiteSpace(entry.ProficiencyLevel))
                     errors[$"SkillEntries[{i}].ProficiencyLevel"] = "Please select a proficiency level.";
 
-                if (entry.YearsOfExperience < 0 || entry.YearsOfExperience > 60)
+                if (entry.YearsOfExperience <= 0)
+                    errors[$"SkillEntries[{i}].YearsOfExperience"] = "Please enter years of experience.";
+                else if (entry.YearsOfExperience < 0 || entry.YearsOfExperience > 60)
                     errors[$"SkillEntries[{i}].YearsOfExperience"] = "Enter a value between 0 and 60.";
 
                 if (!string.IsNullOrWhiteSpace(entry.AdditionalNotes) && entry.AdditionalNotes.Length > 500)

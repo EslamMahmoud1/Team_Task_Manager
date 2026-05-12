@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Team_Task_Manager.Models.Entities.User;
 using Team_Task_Manager.Services.Interfaces;
@@ -7,6 +8,7 @@ using Team_Task_Manager.ViewModels.UpdateProfile;
 
 namespace Team_Task_Manager.Controllers
 {
+    [Authorize]
     public class UpdateProfileController : Controller
     {
         private readonly IUserProfileService _profileService;
