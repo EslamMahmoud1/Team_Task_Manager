@@ -1,0 +1,510 @@
+@using Team_Task_Manager.ViewModels.UpdateProfile
+@using Team_Task_Manager.Views.UpdateProfile
+@model UserProfileViewModel
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Profile</title>
+
+    <link rel="stylesheet" href="~/css/userprofile.css" asp-append-version="true" />
+</head>
+
+<body>
+
+
+
+    <div class="layout">
+
+        <aside class="sidebar">
+            <ul>
+                <li class="sidebar__item sidebar__item--active">Profile</li>
+
+            </ul>
+        </aside>
+
+        <main class="content">
+
+            <form method="post" enctype="multipart/form-data">
+
+                <!-- Step Labels -->
+                <div class="steps-labels">
+
+                    <div class="step-label" id="label-1">
+                        <div class="step-label__circle step-label__circle--active">1</div>
+
+                        <div class="step-label__text">
+                            <strong>PERSONAL INFO</strong>
+                            <span>Tell us about yourself</span>
+                        </div>
+                    </div>
+
+                    <div class="step-label" id="label-2">
+                        <div class="step-label__circle" id="circle-2">2</div>
+
+                        <div class="step-label__text">
+                            <strong>EDUCATION</strong>
+                            <span>Your academic background</span>
+                        </div>
+                    </div>
+
+                    <div class="step-label" id="label-3">
+                        <div class="step-label__circle" id="circle-3">3</div>
+
+                        <div class="step-label__text">
+                            <strong>SKILLS</strong>
+                            <span>Your expertise &amp; knowledge</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Progress -->
+                <div class="progress-bar-container">
+                    <div class="progress-track">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+
+                    <div class="progress-dot progress-dot--done" id="dot-1">&#10003;</div>
+                    <div class="progress-dot" id="dot-2">2</div>
+                    <div class="progress-dot" id="dot-3">3</div>
+                </div>
+
+                <!-- ===================== SECTION 1 ===================== -->
+
+                <div class="form-card" id="section-1">
+
+                    <h2>Section 1: Personal Info</h2>
+
+                    <div asp-validation-summary="ModelOnly"
+                         class="error-summary">
+                    </div>
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+
+                            <label asp-for="PersonalInfo.FirstName"></label>
+
+                            <input asp-for="PersonalInfo.FirstName"
+                                   class="form-control"
+                                   placeholder="Jane" />
+
+                            <span asp-validation-for="PersonalInfo.FirstName"
+                                  class="field-error">
+                            </span>
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label asp-for="PersonalInfo.LastName"></label>
+
+                            <input asp-for="PersonalInfo.LastName"
+                                   class="form-control"
+                                   placeholder="Doe" />
+
+                            <span asp-validation-for="PersonalInfo.LastName"
+                                  class="field-error">
+                            </span>
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label asp-for="PersonalInfo.Email"></label>
+
+                            <input asp-for="PersonalInfo.Email"
+                                   class="form-control"
+                                   disabled />
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label asp-for="PersonalInfo.Phone"></label>
+
+                            <input asp-for="PersonalInfo.Phone"
+                                   class="form-control"
+                                   placeholder="+1-555-123-4567" />
+
+                            <span asp-validation-for="PersonalInfo.Phone"
+                                  class="field-error">
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="form-grid form-grid--photo-row">
+
+                        <div class="form-group form-group--photo">
+
+                            <label>Profile Picture</label>
+
+                            <div class="avatar-preview" id="avatar-preview">
+                                <svg viewBox="0 0 80 80"
+                                     xmlns="http://www.w3.org/2000/svg">
+
+                                    <circle cx="40"
+                                            cy="35"
+                                            r="18"
+                                            fill="#b0bec5" />
+
+                                    <ellipse cx="40"
+                                             cy="70"
+                                             rx="28"
+                                             ry="18"
+                                             fill="#b0bec5" />
+                                </svg>
+                            </div>
+
+                            <button type="button"
+                                    class="btn btn--secondary"
+                                    id="uploadPhotoBtn">
+                                Upload New Photo
+                            </button>
+
+                            <input asp-for="PersonalInfo.ProfilePictureUrl"
+                                   type="file"
+                                   accept="image/*"
+                                   style="display:none;" />
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label asp-for="PersonalInfo.Location"></label>
+
+                            <input asp-for="PersonalInfo.Location"
+                                   class="form-control"
+                                   placeholder="New York, USA" />
+
+                            <span asp-validation-for="PersonalInfo.Location"
+                                  class="field-error">
+                            </span>
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label asp-for="PersonalInfo.DateOfBirth"></label>
+
+                            <input asp-for="PersonalInfo.DateOfBirth"
+                                   type="date"
+                                   class="form-control" />
+
+                            <span asp-validation-for="PersonalInfo.DateOfBirth"
+                                  class="field-error">
+                            </span>
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label asp-for="PersonalInfo.Headline"></label>
+
+                            <input asp-for="PersonalInfo.Headline"
+                                   class="form-control"
+                                   placeholder="Full-Stack Software Engineer" />
+
+                            <span asp-validation-for="PersonalInfo.Headline"
+                                  class="field-error">
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="form-group form-group--full">
+
+                        <label asp-for="PersonalInfo.Bio"></label>
+
+                        <textarea asp-for="PersonalInfo.Bio"
+                                  rows="4"
+                                  class="form-control"
+                                      placeholder="Experienced software engineer passionate about...">
+                    </textarea>
+
+                            <span asp-validation-for="PersonalInfo.Bio"
+                                  class="field-error">
+                            </span>
+
+                        </div>
+
+                        <div class="form-actions">
+
+                            <button type="button"
+                                    class="btn btn--secondary"
+                                    id="saveDraft1">
+                                Save Draft
+                            </button>
+
+                            <button type="button"
+                                    class="btn btn--primary"
+                                    id="nextToSection2">
+                                Next: Education &#8594;
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <!-- ===================== SECTION 2 ===================== -->
+
+                    <div class="form-card"
+                         id="section-2"
+                         style="display:none;">
+
+                        <h2>Section 2: Education</h2>
+
+                        <div id="education-entries">
+
+                            @for (int i = 0; i < Model.Educations.Count; i++)
+                            {
+                                <div class="education-entry"
+                                     data-index="@i">
+
+                                    <div class="entry-header">
+
+                                        <h4>Education Entry #@(i + 1)</h4>
+
+                                        <button type="button"
+                                                class="btn btn--danger btn--sm remove-entry">
+                                            Remove
+                                        </button>
+
+                                    </div>
+
+                                    <div class="form-grid">
+
+                                        <div class="form-group">
+
+                                            <label asp-for="Educations[i].Institution"></label>
+
+                                            <input asp-for="Educations[i].Institution"
+                                                   class="form-control"
+                                                   placeholder="Harvard University" />
+
+                                            <span asp-validation-for="Educations[i].Institution"
+                                                  class="field-error">
+                                            </span>
+
+                                        </div>
+
+                                        <div class="form-group">
+
+                                            <label asp-for="Educations[i].Degree"></label>
+
+                                            <input asp-for="Educations[i].Degree"
+                                                   class="form-control"
+                                                   placeholder="Bachelor of Science" />
+
+                                            <span asp-validation-for="Educations[i].Degree"
+                                                  class="field-error">
+                                            </span>
+
+                                        </div>
+
+                                        <div class="form-group">
+
+                                            <label asp-for="Educations[i].FieldOfStudy"></label>
+
+                                            <input asp-for="Educations[i].FieldOfStudy"
+                                                   class="form-control"
+                                                   placeholder="Computer Science" />
+
+                                            <span asp-validation-for="Educations[i].FieldOfStudy"
+                                                  class="field-error">
+                                            </span>
+
+                                        </div>
+
+                                        <div class="form-group">
+
+                                            <label asp-for="Educations[i].GraduationYear"></label>
+
+                                            <input asp-for="Educations[i].GraduationYear"
+                                                   type="number"
+                                                   min="1950"
+                                                   max="2030"
+                                                   class="form-control"
+                                                   placeholder="2020" />
+
+                                            <span asp-validation-for="Educations[i].GraduationYear"
+                                                  class="field-error">
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+                                    <div class="form-group">
+
+                                        <label asp-for="Educations[i].Description"></label>
+
+                                        <textarea asp-for="Educations[i].Description"
+                                                  rows="2"
+                                                  class="form-control"
+                                                      placeholder="Notable achievements, thesis topic...">
+                                </textarea>
+
+                                            <span asp-validation-for="Educations[i].Description"
+                                                  class="field-error">
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+                                }
+
+                            </div>
+
+                            <button type="button"
+                                    class="btn btn--secondary btn--add"
+                                    id="addEducation">
+                                + Add Another Education
+                            </button>
+
+                            <div class="form-actions">
+
+                                <button type="button"
+                                        class="btn btn--ghost"
+                                        id="backToSection1">
+                                    &#8592; Back
+                                </button>
+
+                                <button type="button"
+                                        class="btn btn--secondary"
+                                        id="saveDraft2">
+                                    Save Draft
+                                </button>
+
+                                <button type="button"
+                                        class="btn btn--primary"
+                                        id="nextToSection3">
+                                    Next: Skills &#8594;
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                        <!-- ===================== SECTION 3 ===================== -->
+
+                        <div class="form-card"
+                             id="section-3"
+                             style="display:none;">
+
+                            <h2>Section 3: Skills</h2>
+
+                            <div class="form-group">
+
+                                <label asp-for="Skills.ProficiencyLevel"></label>
+
+                                <select asp-for="Skills.ProficiencyLevel"
+                                        class="form-control">
+
+                                    <option value="">-- Select --</option>
+                                    <option value="Beginner">Beginner</option>
+                                    <option value="Intermediate">Intermediate</option>
+                                    <option value="Advanced">Advanced</option>
+                                    <option value="Expert">Expert</option>
+
+                                </select>
+
+                                <span asp-validation-for="Skills.ProficiencyLevel"
+                                      class="field-error">
+                                </span>
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <label asp-for="Skills.YearsOfExperience"></label>
+
+                                <input asp-for="Skills.YearsOfExperience"
+                                       type="number"
+                                       min="0"
+                                       max="60"
+                                       class="form-control"
+                                       placeholder="5" />
+
+                                <span asp-validation-for="Skills.YearsOfExperience"
+                                      class="field-error">
+                                </span>
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <label asp-for="Skills.AdditionalNotes"></label>
+
+                                <textarea asp-for="Skills.AdditionalNotes"
+                                          rows="3"
+                                          class="form-control"
+                                              placeholder="Any other expertise or certifications...">
+                    </textarea>
+
+                                    <span asp-validation-for="Skills.AdditionalNotes"
+                                          class="field-error">
+                                    </span>
+
+                                </div>
+
+                                <div class="form-actions">
+
+                                    <button type="button"
+                                            class="btn btn--ghost"
+                                            id="backToSection2">
+                                        &#8592; Back
+                                    </button>
+
+                                    <button type="button"
+                                            class="btn btn--secondary"
+                                            id="saveDraft3">
+                                        Save Draft
+                                    </button>
+
+                                    <button type="submit"
+                                            class="btn btn--primary">
+                                        Submit Profile &#10003;
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                            <!-- SUCCESS -->
+
+                            <div class="form-card success-card"
+                                 id="success-section"
+                                 style="display:none;">
+
+                                <div class="success-icon">&#10003;</div>
+
+                                <h2>Profile Submitted!</h2>
+
+                                <p>Your profile has been successfully saved.</p>
+
+                            </div>
+
+                        </form>
+
+                    </main>
+
+                </div>
+
+                @section UpdateProfileScripts {
+
+                    <partial name="_ValidationScriptsPartial" />
+
+                    <script src="~/js/userprofile.js"
+                            asp-append-version="true">
+                    </script>
+                }
+
+            </body>
+        </html>

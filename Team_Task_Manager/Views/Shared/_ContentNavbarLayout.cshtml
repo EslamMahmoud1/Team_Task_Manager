@@ -67,6 +67,7 @@
         {
           @await Html.PartialAsync("Sections/Footer/_Footer")
         }
+                @await RenderSectionAsync("UpdateProfileScripts", required: false)
         <!-- / Footer -->
         <div class="content-backdrop fade"></div>
       </div>

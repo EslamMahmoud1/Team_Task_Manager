@@ -46,6 +46,7 @@ namespace Team_Task_Manager.Extesions
             services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IUsersService, UsersService>();
+            services.AddScoped<IUserProfileService, UserProfileService>();
             new MappingConfiguration().ConfigureMappings();
             return services;
         }

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Team_Task_Manager.Models.Entities.Permissions;
 using Team_Task_Manager.Models.Entities.Role;
 using Team_Task_Manager.Models.Entities.Task;
+using Team_Task_Manager.Models.Entities.UpdateProfile;
 using Team_Task_Manager.Models.Entities.User;
 
 namespace Team_Task_Manager.Data
@@ -23,5 +24,9 @@ namespace Team_Task_Manager.Data
         public DbSet<UserRoles> TaskUserRoles { get; set; }
         public DbSet<Permission> Permissions { get; set; }
         public DbSet<RolePermission> RolePermissions { get; set; }
+        public DbSet<UserProfile> UserProfiles { get; set; }
+        public DbSet<Education> Educations { get; set; }
+        public DbSet<Skill> Skills { get; set; }
+        public DbSet<UserSkill> UserSkills { get; set; }
     }
 }
