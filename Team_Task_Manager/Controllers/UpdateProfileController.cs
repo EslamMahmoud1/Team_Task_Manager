@@ -39,6 +39,21 @@ namespace Team_Task_Manager.Controllers
             return View(vm);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> ShowProfile()
+        {
+            var vm = await _profileService.GetProfileAsync(UserId)
+                     ?? new UserProfileViewModel();
+
+            vm.PersonalInfo.Email = _userManager.GetUserName(User);
+            ViewBag.HasProfile = !string.IsNullOrWhiteSpace(vm.PersonalInfo.FirstName)
+                                 || !string.IsNullOrWhiteSpace(vm.PersonalInfo.LastName)
+                                 || vm.Educations.Count > 0
+                                 || vm.Skills.SkillNames.Count > 0;
+
+            return View(vm);
+        }
+
         // ════════════════════════════════════════════════════════
         //  POST /profile/personal-info
         //  AJAX — validate & save Section 1

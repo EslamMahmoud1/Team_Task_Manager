@@ -21,6 +21,13 @@
         <aside class="sidebar">
             <ul>
                 <li class="sidebar__item sidebar__item--active">Profile</li>
+                <li class="sidebar__item">
+                    <a asp-controller="UpdateProfile"
+                       asp-action="ShowProfile"
+                       style="color:inherit;text-decoration:none;">
+                        Show Profile
+                    </a>
+                </li>
 
             </ul>
         </aside>
@@ -519,6 +526,15 @@
                                 <h2>Profile Submitted!</h2>
 
                                 <p>Your profile has been successfully saved.</p>
+
+                                <div class="form-actions" style="justify-content:center;">
+                                    <a asp-controller="UpdateProfile"
+                                       asp-action="ShowProfile"
+                                       class="btn btn--primary"
+                                       style="text-decoration:none;">
+                                        View Profile
+                                    </a>
+                                </div>
 
                             </div>
 
