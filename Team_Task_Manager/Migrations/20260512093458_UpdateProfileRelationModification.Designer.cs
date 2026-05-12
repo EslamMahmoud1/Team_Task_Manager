@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Team_Task_Manager.Data;
 
@@ -11,9 +12,11 @@ using Team_Task_Manager.Data;
 namespace Team_Task_Manager.Migrations
 {
     [DbContext(typeof(TaskAppDbContext))]
-    partial class TaskAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260512093458_UpdateProfileRelationModification")]
+    partial class UpdateProfileRelationModification
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -139,7 +142,7 @@ namespace Team_Task_Manager.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Permissions", (string)null);
+                    b.ToTable("Permissions");
                 });
 
             modelBuilder.Entity("Team_Task_Manager.Models.Entities.Permissions.RolePermission", b =>
@@ -154,7 +157,7 @@ namespace Team_Task_Manager.Migrations
 
                     b.HasIndex("PermissionId");
 
-                    b.ToTable("RolePermissions", (string)null);
+                    b.ToTable("RolePermissions");
                 });
 
             modelBuilder.Entity("Team_Task_Manager.Models.Entities.Role.UserRoles", b =>
@@ -228,7 +231,7 @@ namespace Team_Task_Manager.Migrations
 
                     b.HasIndex("CreatedById");
 
-                    b.ToTable("Tasks", (string)null);
+                    b.ToTable("Tasks");
                 });
 
             modelBuilder.Entity("Team_Task_Manager.Models.Entities.UpdateProfile.Education", b =>

@@ -28,6 +28,7 @@
         <main class="content">
 
             <form method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
 
                 <!-- Step Labels -->
                 <div class="steps-labels">
@@ -168,6 +169,7 @@
                             </button>
 
                             <input asp-for="PersonalInfo.ProfilePictureUrl"
+                                   id="PhotoUpload"
                                    type="file"
                                    accept="image/*"
                                    style="display:none;" />
@@ -265,7 +267,8 @@
                             @for (int i = 0; i < Model.Educations.Count; i++)
                             {
                                 <div class="education-entry"
-                                     data-index="@i">
+                                     data-index="@i"
+                                     data-db-id="@Model.Educations[i].Id">
 
                                     <div class="entry-header">
 
@@ -402,6 +405,33 @@
 
                             <div class="form-group">
 
+                                <label>Skills</label>
+
+                                <div class="skills-input-container" id="skills-container">
+                                    <input id="skillInput"
+                                           list="skillOptions"
+                                           type="text"
+                                           placeholder="Type a skill and press Enter" />
+
+                                    <datalist id="skillOptions">
+                                        @foreach (var skill in Enum.GetNames(typeof(Team_Task_Manager.Models.Entities.UpdateProfile.SkillType)))
+                                        {
+                                            <option value="@skill"></option>
+                                        }
+                                    </datalist>
+                                </div>
+
+                                <input type="hidden"
+                                       id="SkillsJson"
+                                       name="SkillsJson"
+                                       value='@System.Text.Json.JsonSerializer.Serialize(Model.Skills.SkillNames)' />
+
+                                <span class="field-error"></span>
+
+                            </div>
+
+                            <div class="form-group">
+
                                 <label asp-for="Skills.ProficiencyLevel"></label>
 
                                 <select asp-for="Skills.ProficiencyLevel"
@@ -468,7 +498,8 @@
                                         Save Draft
                                     </button>
 
-                                    <button type="submit"
+                                    <button type="button"
+                                            id="submitProfile"
                                             class="btn btn--primary">
                                         Submit Profile &#10003;
                                     </button>

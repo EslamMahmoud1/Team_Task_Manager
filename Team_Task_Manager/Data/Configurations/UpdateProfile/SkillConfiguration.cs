@@ -56,12 +56,21 @@ namespace YourApp.Data.Configurations
             builder.HasKey(us => new { us.UserProfileId, us.SkillId });
 
             // ── Properties ───────────────────────────────────────
+            builder.Property(us => us.UserProfileId)
+                   .IsRequired();
+
+            builder.Property(us => us.SkillId)
+                   .IsRequired();
+
             builder.Property(us => us.YearsOfExperience)
                    .IsRequired()
                    .HasDefaultValue(0);
 
             builder.Property(us => us.AdditionalNotes)
                    .HasMaxLength(500);
+
+            builder.HasIndex(us => us.UserProfileId);
+            builder.HasIndex(us => us.SkillId);
 
             // ── Relations ────────────────────────────────────────
 

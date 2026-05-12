@@ -36,7 +36,7 @@ namespace Team_Task_Manager.Services.Implementations
             if (errors.Count > 0)
                 return Result<string>.Failure(errors.Values.ToList());
 
-            var profile = await GetOrCreateProfileAsync(userId);
+            var profile = await GetOrCreateProfileAsync(userId, vm);
             profile.ApplyFrom(vm);
 
             await _db.SaveChangesAsync();
@@ -50,6 +50,7 @@ namespace Team_Task_Manager.Services.Implementations
             if (errors.Count > 0)
                 return Result<string>.Failure(errors.Values.ToList());
             var profile = await GetOrCreateProfileAsync(userId);
+            await EnsureProfileIsSavedAsync(profile);
 
             await UpsertEducationsAsync(profile.Id, vms);
             return Result<string>.Success("Educations saved successfully.");
@@ -63,6 +64,7 @@ namespace Team_Task_Manager.Services.Implementations
                 return Result<string>.Failure(errors.Values.ToList());
 
             var profile = await GetOrCreateProfileAsync(userId);
+            await EnsureProfileIsSavedAsync(profile);
 
             await UpsertSkillsAsync(profile.Id, vm);
             return Result<string>.Success("Skills saved successfully.");
@@ -71,7 +73,7 @@ namespace Team_Task_Manager.Services.Implementations
         // ── Save Draft (no validation) ───────────────────────────
         public async Task<Result<string>> SaveDraftAsync(long userId, PersonalInfoViewModel vm)
         {
-            var profile = await GetOrCreateProfileAsync(userId);
+            var profile = await GetOrCreateProfileAsync(userId, vm);
             profile.ApplyFrom(vm);
 
             await _db.SaveChangesAsync();
@@ -82,19 +84,41 @@ namespace Team_Task_Manager.Services.Implementations
         //  Private: DB helpers
         // ════════════════════════════════════════════════════════
 
-        private async Task<UserProfile> GetOrCreateProfileAsync(long userId)
+        private async Task<UserProfile> GetOrCreateProfileAsync(
+            long userId,
+            PersonalInfoViewModel? personalInfo = null)
         {
             var profile = await _db.UserProfiles
                 .FirstOrDefaultAsync(p => p.UserId == userId);
 
             if (profile == null)
             {
-                profile = new UserProfile { UserId = userId };
+                var now = DateTime.UtcNow;
+
+                profile = new UserProfile
+                {
+                    UserId = userId,
+                    FirstName = personalInfo?.FirstName?.Trim() ?? string.Empty,
+                    LastName = personalInfo?.LastName?.Trim() ?? string.Empty,
+                    Phone = personalInfo?.Phone,
+                    Location = personalInfo?.Location,
+                    DateOfBirth = personalInfo?.DateOfBirth,
+                    Headline = personalInfo?.Headline,
+                    Bio = personalInfo?.Bio,
+                    CreatedAt = now,
+                    UpdatedAt = now
+                };
+
                 _db.UserProfiles.Add(profile);
-                await _db.SaveChangesAsync();
             }
 
             return profile;
+        }
+
+        private async Task EnsureProfileIsSavedAsync(UserProfile profile)
+        {
+            if (profile.Id == 0)
+                await _db.SaveChangesAsync();
         }
 
         private async Task UpsertEducationsAsync(int profileId, List<EducationViewModel> vms)
@@ -140,10 +164,11 @@ namespace Team_Task_Manager.Services.Implementations
 
             foreach (var name in vm.SkillNames.Distinct(StringComparer.OrdinalIgnoreCase))
             {
-                var skill = await _db.Skills.FirstOrDefaultAsync(s => s.Name.ToString() == name);
+                var skillType = Enum.Parse<SkillType>(name, ignoreCase: true);
+                var skill = await _db.Skills.FirstOrDefaultAsync(s => s.Name == skillType);
                 if (skill == null)
                 {
-                    skill = new Skill { Name = Enum.Parse<SkillType>(name) };
+                    skill = new Skill { Name = skillType };
                     _db.Skills.Add(skill);
                     await _db.SaveChangesAsync(); // get skill.Id before using it
                 }
@@ -229,6 +254,15 @@ namespace Team_Task_Manager.Services.Implementations
                 errors["Skills"] = "Please add at least one skill.";
             else if (vm.SkillNames.Count > 30)
                 errors["Skills"] = "You may add up to 30 skills.";
+            else
+            {
+                var invalidSkills = vm.SkillNames
+                    .Where(name => !Enum.TryParse<SkillType>(name, ignoreCase: true, out _))
+                    .ToList();
+
+                if (invalidSkills.Count > 0)
+                    errors["Skills"] = $"Invalid skill: {string.Join(", ", invalidSkills)}.";
+            }
 
             if (string.IsNullOrWhiteSpace(vm.ProficiencyLevel))
                 errors["ProficiencyLevel"] = "Please select a proficiency level.";

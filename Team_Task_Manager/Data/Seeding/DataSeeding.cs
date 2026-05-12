@@ -2,6 +2,7 @@
 using System.Data;
 using Team_Task_Manager.Models.Entities.Permissions;
 using Team_Task_Manager.Models.Entities.Role;
+using Team_Task_Manager.Models.Entities.UpdateProfile;
 using Team_Task_Manager.Models.Entities.User;
 
 namespace Team_Task_Manager.Data.Seeding
@@ -39,6 +40,21 @@ namespace Team_Task_Manager.Data.Seeding
             if (!context.TaskUserRoles.Any())
             {
                 await context.TaskUserRoles.AddAsync(new UserRoles() { Name = "Admin" });
+                await context.SaveChangesAsync();
+            }
+
+            var existingSkillNames = await context.Skills
+                .Select(skill => skill.Name)
+                .ToListAsync();
+
+            var missingSkills = Enum.GetValues<SkillType>()
+                .Except(existingSkillNames)
+                .Select(skillType => new Skill { Name = skillType })
+                .ToList();
+
+            if (missingSkills.Count > 0)
+            {
+                await context.Skills.AddRangeAsync(missingSkills);
                 await context.SaveChangesAsync();
             }
             

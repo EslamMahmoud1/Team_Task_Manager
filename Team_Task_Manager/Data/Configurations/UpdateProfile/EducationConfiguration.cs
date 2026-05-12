@@ -41,6 +41,8 @@ namespace YourApp.Data.Configurations
             builder.Property(e => e.Description)
                    .HasMaxLength(500);
 
+            builder.HasIndex(e => e.UserProfileId);
+
             // ── Relations ────────────────────────────────────────
 
             // Many-to-one: Education → UserProfile
