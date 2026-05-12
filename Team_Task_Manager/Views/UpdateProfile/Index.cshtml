@@ -414,86 +414,86 @@
 
                             <h2>Section 3: Skills</h2>
 
-                            <div class="form-group">
+                            <div id="skill-entries">
+                                @for (int i = 0; i < Model.Skills.SkillEntries.Count; i++)
+                                {
+                                    <div class="skill-entry education-entry"
+                                         data-index="@i"
+                                         data-skill-id="@Model.Skills.SkillEntries[i].SkillId">
 
-                                <label>Skills</label>
+                                        <div class="entry-header">
+                                            <h4>Skill Entry #@(i + 1)</h4>
 
-                                <div class="skills-input-container" id="skills-container">
-                                    <input id="skillInput"
-                                           list="skillOptions"
-                                           type="text"
-                                           placeholder="Type a skill and press Enter" />
+                                            <button type="button"
+                                                    class="btn btn--danger btn--sm remove-skill-entry">
+                                                Remove
+                                            </button>
+                                        </div>
 
-                                    <datalist id="skillOptions">
-                                        @foreach (var skill in Enum.GetNames(typeof(Team_Task_Manager.Models.Entities.UpdateProfile.SkillType)))
-                                        {
-                                            <option value="@skill"></option>
-                                        }
-                                    </datalist>
-                                </div>
+                                        <div class="form-grid">
+                                            <div class="form-group">
+                                                <label>Skill</label>
+                                                <select name="Skills.SkillEntries[@i].Name"
+                                                        class="form-control">
+                                                    <option value="">-- Select --</option>
+                                                    @foreach (var skill in Enum.GetNames(typeof(Team_Task_Manager.Models.Entities.UpdateProfile.SkillType)))
+                                                    {
+                                                        <option value="@skill" selected="@(Model.Skills.SkillEntries[i].Name == skill)">
+                                                            @skill
+                                                        </option>
+                                                    }
+                                                </select>
+                                                <span class="field-error"></span>
+                                            </div>
 
-                                <input type="hidden"
-                                       id="SkillsJson"
-                                       name="SkillsJson"
-                                       value='@System.Text.Json.JsonSerializer.Serialize(Model.Skills.SkillNames)' />
+                                            <div class="form-group">
+                                                <label>Proficiency Level</label>
+                                                <select name="Skills.SkillEntries[@i].ProficiencyLevel"
+                                                        class="form-control">
+                                                    <option value="">-- Select --</option>
+                                                    <option value="Beginner" selected="@(Model.Skills.SkillEntries[i].ProficiencyLevel == "Beginner")">Beginner</option>
+                                                    <option value="Intermediate" selected="@(Model.Skills.SkillEntries[i].ProficiencyLevel == "Intermediate")">Intermediate</option>
+                                                    <option value="Advanced" selected="@(Model.Skills.SkillEntries[i].ProficiencyLevel == "Advanced")">Advanced</option>
+                                                    <option value="Expert" selected="@(Model.Skills.SkillEntries[i].ProficiencyLevel == "Expert")">Expert</option>
+                                                </select>
+                                                <span class="field-error"></span>
+                                            </div>
 
-                                <span class="field-error"></span>
+                                            <div class="form-group">
+                                                <label>Years of Experience</label>
+                                                <input name="Skills.SkillEntries[@i].YearsOfExperience"
+                                                       type="number"
+                                                       min="0"
+                                                       max="60"
+                                                       class="form-control"
+                                                       placeholder="5"
+                                                       value="@Model.Skills.SkillEntries[i].YearsOfExperience" />
+                                                <span class="field-error"></span>
+                                            </div>
+                                        </div>
 
+                                        <div class="form-group">
+                                            <label>Additional Notes</label>
+                                            <textarea name="Skills.SkillEntries[@i].AdditionalNotes"
+                                                      rows="2"
+                                                      class="form-control"
+                                                      placeholder="Projects, certifications, frameworks...">@Model.Skills.SkillEntries[i].AdditionalNotes</textarea>
+                                            <span class="field-error"></span>
+                                        </div>
+                                    </div>
+                                }
                             </div>
 
-                            <div class="form-group">
+                            <input type="hidden"
+                                   id="SkillsJson"
+                                   name="SkillsJson"
+                                   value='@System.Text.Json.JsonSerializer.Serialize(Model.Skills.SkillEntries)' />
 
-                                <label asp-for="Skills.ProficiencyLevel"></label>
-
-                                <select asp-for="Skills.ProficiencyLevel"
-                                        class="form-control">
-
-                                    <option value="">-- Select --</option>
-                                    <option value="Beginner">Beginner</option>
-                                    <option value="Intermediate">Intermediate</option>
-                                    <option value="Advanced">Advanced</option>
-                                    <option value="Expert">Expert</option>
-
-                                </select>
-
-                                <span asp-validation-for="Skills.ProficiencyLevel"
-                                      class="field-error">
-                                </span>
-
-                            </div>
-
-                            <div class="form-group">
-
-                                <label asp-for="Skills.YearsOfExperience"></label>
-
-                                <input asp-for="Skills.YearsOfExperience"
-                                       type="number"
-                                       min="0"
-                                       max="60"
-                                       class="form-control"
-                                       placeholder="5" />
-
-                                <span asp-validation-for="Skills.YearsOfExperience"
-                                      class="field-error">
-                                </span>
-
-                            </div>
-
-                            <div class="form-group">
-
-                                <label asp-for="Skills.AdditionalNotes"></label>
-
-                                <textarea asp-for="Skills.AdditionalNotes"
-                                          rows="3"
-                                          class="form-control"
-                                              placeholder="Any other expertise or certifications...">
-                    </textarea>
-
-                                    <span asp-validation-for="Skills.AdditionalNotes"
-                                          class="field-error">
-                                    </span>
-
-                                </div>
+                            <button type="button"
+                                    class="btn btn--secondary btn--add"
+                                    id="addSkill">
+                                + Add Another Skill
+                            </button>
 
                                 <div class="form-actions">
 

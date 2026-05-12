@@ -97,9 +97,24 @@ namespace Team_Task_Manager.ViewModels.UpdateProfile
     // ────────────────────────────────────────────────────────────
     public class SkillsViewModel
     {
-        /// <summary>Tag names entered by the user (sent as JSON array from JS).</summary>
-        [MinLength(1, ErrorMessage = "Add at least one skill.")]
+        public List<SkillEntryViewModel> SkillEntries { get; set; } = new();
+
+        /// <summary>Kept for compatibility with older views/JSON payloads.</summary>
         public List<string> SkillNames { get; set; } = new();
+
+        // Compatibility for older Razor Page code. New UI uses SkillEntries.
+        public string? ProficiencyLevel { get; set; }
+        public int YearsOfExperience { get; set; }
+        public string? AdditionalNotes { get; set; }
+    }
+
+    public class SkillEntryViewModel
+    {
+        public int? SkillId { get; set; }
+
+        [Required(ErrorMessage = "Please select a skill.")]
+        [Display(Name = "Skill")]
+        public string Name { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Please select a proficiency level.")]
         [Display(Name = "Proficiency Level")]
@@ -163,14 +178,22 @@ namespace Team_Task_Manager.ViewModels.UpdateProfile
 
         public static SkillsViewModel ToSkillsViewModel(this UserProfile profile)
         {
-            // All skills on the profile share the same ProficiencyLevel / YearsOfExperience
-            // (stored per-row; we read from the first entry for the form defaults)
-            var first = profile.Skills.FirstOrDefault();
+            var entries = profile.Skills.Select(s => new SkillEntryViewModel
+            {
+                SkillId = s.SkillId,
+                Name = s.Skill.Name.ToString(),
+                ProficiencyLevel = s.ProficiencyLevel,
+                YearsOfExperience = s.YearsOfExperience,
+                AdditionalNotes = s.AdditionalNotes,
+            }).ToList();
+
             return new SkillsViewModel
             {
-                SkillNames = profile.Skills.Select(s => s.Skill.Name.ToString()).ToList(),
-                YearsOfExperience = first?.YearsOfExperience ?? 0,
-                AdditionalNotes = first?.AdditionalNotes,
+                SkillEntries = entries,
+                SkillNames = entries.Select(e => e.Name).ToList(),
+                ProficiencyLevel = entries.FirstOrDefault()?.ProficiencyLevel,
+                YearsOfExperience = entries.FirstOrDefault()?.YearsOfExperience ?? 0,
+                AdditionalNotes = entries.FirstOrDefault()?.AdditionalNotes,
             };
         }
 

@@ -49,7 +49,7 @@ namespace Team_Task_Manager.Controllers
             ViewBag.HasProfile = !string.IsNullOrWhiteSpace(vm.PersonalInfo.FirstName)
                                  || !string.IsNullOrWhiteSpace(vm.PersonalInfo.LastName)
                                  || vm.Educations.Count > 0
-                                 || vm.Skills.SkillNames.Count > 0;
+                                 || vm.Skills.SkillEntries.Count > 0;
 
             return View(vm);
         }
@@ -87,8 +87,8 @@ namespace Team_Task_Manager.Controllers
         [HttpPost]
         public async Task<IActionResult> SaveSkills([FromForm] SkillsViewModel vm)
         {
-            // Parse skill names from the JSON string sent by JS
-            vm.SkillNames = ParseSkillNames(Request.Form["SkillsJson"]);
+            vm.SkillEntries = ParseSkillEntries(Request.Form["SkillsJson"]);
+            vm.SkillNames = vm.SkillEntries.Select(skill => skill.Name).ToList();
 
             var result = await _profileService.ValidateSkillsAsync(vm);
             return Json(result.ToApiResponse());
@@ -151,12 +151,14 @@ namespace Team_Task_Manager.Controllers
         //  Helpers
         // ════════════════════════════════════════════════════════
 
-        private static List<string> ParseSkillNames(string? json)
+        private static List<SkillEntryViewModel> ParseSkillEntries(string? json)
         {
             if (string.IsNullOrWhiteSpace(json)) return new();
             try
             {
-                return System.Text.Json.JsonSerializer.Deserialize<List<string>>(json) ?? new();
+                return System.Text.Json.JsonSerializer.Deserialize<List<SkillEntryViewModel>>(
+                    json,
+                    new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new();
             }
             catch { return new(); }
         }

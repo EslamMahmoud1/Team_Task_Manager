@@ -1,9 +1,11 @@
-﻿namespace Team_Task_Manager.Models.Entities.UpdateProfile
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Team_Task_Manager.Models.Entities.UpdateProfile
 {
     public class Skill
     {
         public int Id { get; set; }
-        public SkillType Name { get; set; } 
+        public SkillType Name { get; set; }
 
         // Navigation
         public ICollection<UserSkill> UserSkills { get; set; } = new List<UserSkill>();
@@ -13,6 +15,8 @@
     {
         public int UserProfileId { get; set; }
         public int SkillId { get; set; }
+
+        public string ProficiencyLevel { get; set; } = string.Empty;
         public int YearsOfExperience { get; set; }
         public string? AdditionalNotes { get; set; }
 

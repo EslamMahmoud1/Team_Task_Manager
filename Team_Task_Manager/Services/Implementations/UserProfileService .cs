@@ -104,17 +104,19 @@ namespace Team_Task_Manager.Services.Implementations
 
             _db.UserSkills.RemoveRange(profile.Skills.ToList());
 
-            var skillTypes = vm.Skills.SkillNames
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .Select(name => Enum.Parse<SkillType>(name, ignoreCase: true))
+            var skillEntries = NormalizeSkillEntries(vm.Skills);
+            var skillTypes = skillEntries
+                .Select(entry => Enum.Parse<SkillType>(entry.Name, ignoreCase: true))
+                .Distinct()
                 .ToList();
 
             var existingSkills = await _db.Skills
                 .Where(skill => skillTypes.Contains(skill.Name))
                 .ToListAsync();
 
-            foreach (var skillType in skillTypes)
+            foreach (var entry in skillEntries)
             {
+                var skillType = Enum.Parse<SkillType>(entry.Name, ignoreCase: true);
                 var skill = existingSkills.FirstOrDefault(existing => existing.Name == skillType);
                 if (skill == null)
                 {
@@ -127,8 +129,9 @@ namespace Team_Task_Manager.Services.Implementations
                 {
                     UserProfile = profile,
                     Skill = skill,
-                    YearsOfExperience = vm.Skills.YearsOfExperience,
-                    AdditionalNotes = vm.Skills.AdditionalNotes,
+                    ProficiencyLevel = entry.ProficiencyLevel!,
+                    YearsOfExperience = entry.YearsOfExperience,
+                    AdditionalNotes = entry.AdditionalNotes,
                 });
             }
 
@@ -234,28 +237,66 @@ namespace Team_Task_Manager.Services.Implementations
         private static Dictionary<string, string> ValidateSkills(SkillsViewModel vm)
         {
             var errors = new Dictionary<string, string>();
+            var entries = NormalizeSkillEntries(vm);
 
-            if (vm.SkillNames == null || vm.SkillNames.Count == 0)
-                errors["Skills"] = "Please add at least one skill.";
-            else if (vm.SkillNames.Count > 30)
-                errors["Skills"] = "You may add up to 30 skills.";
-            else
+            if (entries.Count == 0)
             {
-                var invalidSkills = vm.SkillNames
-                    .Where(name => !Enum.TryParse<SkillType>(name, ignoreCase: true, out _))
-                    .ToList();
-
-                if (invalidSkills.Count > 0)
-                    errors["Skills"] = $"Invalid skill: {string.Join(", ", invalidSkills)}.";
+                errors["Skills"] = "Please add at least one skill.";
+                return errors;
             }
 
-            if (string.IsNullOrWhiteSpace(vm.ProficiencyLevel))
-                errors["ProficiencyLevel"] = "Please select a proficiency level.";
+            if (entries.Count > 30)
+                errors["Skills"] = "You may add up to 30 skills.";
 
-            if (vm.YearsOfExperience < 0 || vm.YearsOfExperience > 60)
-                errors["YearsOfExperience"] = "Enter a value between 0 and 60.";
+            var duplicateSkills = entries
+                .GroupBy(entry => entry.Name, StringComparer.OrdinalIgnoreCase)
+                .Where(group => group.Count() > 1)
+                .Select(group => group.Key)
+                .ToList();
+
+            if (duplicateSkills.Count > 0)
+                errors["Skills"] = $"Duplicate skill: {string.Join(", ", duplicateSkills)}.";
+
+            for (var i = 0; i < entries.Count; i++)
+            {
+                var entry = entries[i];
+
+                if (string.IsNullOrWhiteSpace(entry.Name))
+                    errors[$"SkillEntries[{i}].Name"] = "Please select a skill.";
+                else if (!Enum.TryParse<SkillType>(entry.Name, ignoreCase: true, out _))
+                    errors[$"SkillEntries[{i}].Name"] = $"Invalid skill: {entry.Name}.";
+
+                if (string.IsNullOrWhiteSpace(entry.ProficiencyLevel))
+                    errors[$"SkillEntries[{i}].ProficiencyLevel"] = "Please select a proficiency level.";
+
+                if (entry.YearsOfExperience < 0 || entry.YearsOfExperience > 60)
+                    errors[$"SkillEntries[{i}].YearsOfExperience"] = "Enter a value between 0 and 60.";
+
+                if (!string.IsNullOrWhiteSpace(entry.AdditionalNotes) && entry.AdditionalNotes.Length > 500)
+                    errors[$"SkillEntries[{i}].AdditionalNotes"] = "Max 500 characters.";
+            }
 
             return errors;
+        }
+
+        private static List<SkillEntryViewModel> NormalizeSkillEntries(SkillsViewModel vm)
+        {
+            if (vm.SkillEntries.Count > 0)
+                return vm.SkillEntries
+                    .Where(entry => entry != null)
+                    .Select(entry =>
+                    {
+                        entry.Name = entry.Name?.Trim() ?? string.Empty;
+                        entry.ProficiencyLevel = entry.ProficiencyLevel?.Trim();
+                        entry.AdditionalNotes = entry.AdditionalNotes?.Trim();
+                        return entry;
+                    })
+                    .ToList();
+
+            return vm.SkillNames
+                .Where(name => !string.IsNullOrWhiteSpace(name))
+                .Select(name => new SkillEntryViewModel { Name = name.Trim() })
+                .ToList();
         }
     }
 }

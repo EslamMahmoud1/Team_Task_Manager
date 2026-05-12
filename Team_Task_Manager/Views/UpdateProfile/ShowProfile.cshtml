@@ -281,33 +281,25 @@
 
             <section class="profile-section">
                 <h2>Skills</h2>
-                @if (Model.Skills.SkillNames.Count == 0)
+                @if (Model.Skills.SkillEntries.Count == 0)
                 {
                     <p>No skills saved.</p>
                 }
                 else
                 {
-                    <div class="skill-cloud">
-                        @foreach (var skill in Model.Skills.SkillNames)
+                    <div class="profile-list">
+                        @foreach (var skill in Model.Skills.SkillEntries)
                         {
-                            <span class="skill-tag">@skill</span>
+                            <article class="profile-card">
+                                <h3>@Display(skill.Name)</h3>
+                                <p>Proficiency: @Display(skill.ProficiencyLevel)</p>
+                                <p>Years of Experience: @skill.YearsOfExperience</p>
+                                @if (!string.IsNullOrWhiteSpace(skill.AdditionalNotes))
+                                {
+                                    <p>@skill.AdditionalNotes</p>
+                                }
+                            </article>
                         }
-                    </div>
-
-                    <div class="profile-grid">
-                        <div class="profile-field">
-                            <span>Proficiency Level</span>
-                            <strong>@Display(Model.Skills.ProficiencyLevel)</strong>
-                        </div>
-                        <div class="profile-field">
-                            <span>Years of Experience</span>
-                            <strong>@Model.Skills.YearsOfExperience</strong>
-                        </div>
-                    </div>
-
-                    <div class="profile-field" style="margin-top:16px;">
-                        <span>Additional Notes</span>
-                        <strong>@Display(Model.Skills.AdditionalNotes)</strong>
                     </div>
                 }
             </section>

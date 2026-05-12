@@ -66,6 +66,10 @@ namespace YourApp.Data.Configurations
                    .IsRequired()
                    .HasDefaultValue(0);
 
+            builder.Property(us => us.ProficiencyLevel)
+                   .IsRequired()
+                   .HasMaxLength(30);
+
             builder.Property(us => us.AdditionalNotes)
                    .HasMaxLength(500);
 
