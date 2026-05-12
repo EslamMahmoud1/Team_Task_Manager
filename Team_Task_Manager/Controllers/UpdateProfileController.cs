@@ -56,18 +56,18 @@ namespace Team_Task_Manager.Controllers
 
         // ════════════════════════════════════════════════════════
         //  POST /profile/personal-info
-        //  AJAX — validate & save Section 1
+        //  AJAX — validate Section 1 only; final submit persists data
         // ════════════════════════════════════════════════════════
         [HttpPost]
         public async Task<IActionResult> SavePersonalInfo([FromForm] PersonalInfoViewModel vm)
         {
-            var result = await _profileService.SavePersonalInfoAsync(UserId, vm);
+            var result = await _profileService.ValidatePersonalInfoAsync(vm);
             return Json(result.ToApiResponse());
         }
 
         // ════════════════════════════════════════════════════════
         //  POST /profile/education
-        //  AJAX — validate & save Section 2
+        //  AJAX — validate Section 2 only; final submit persists data
         //  Receives a JSON array of education entries from JS
         // ════════════════════════════════════════════════════════
         [HttpPost]
@@ -76,13 +76,13 @@ namespace Team_Task_Manager.Controllers
             if (educations == null || educations.Count == 0)
                 return Json(new { success = false, errors = new { general = "Please add at least one education entry." } });
 
-            var result = await _profileService.SaveEducationsAsync(UserId, educations);
+            var result = await _profileService.ValidateEducationsAsync(educations);
             return Json(result.ToApiResponse());
         }
 
         // ════════════════════════════════════════════════════════
         //  POST /profile/skills
-        //  AJAX — validate & save Section 3
+        //  AJAX — validate Section 3 only; final submit persists data
         // ════════════════════════════════════════════════════════
         [HttpPost]
         public async Task<IActionResult> SaveSkills([FromForm] SkillsViewModel vm)
@@ -90,13 +90,22 @@ namespace Team_Task_Manager.Controllers
             // Parse skill names from the JSON string sent by JS
             vm.SkillNames = ParseSkillNames(Request.Form["SkillsJson"]);
 
-            var result = await _profileService.SaveSkillsAsync(UserId, vm);
+            var result = await _profileService.ValidateSkillsAsync(vm);
+            return Json(result.ToApiResponse());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SubmitProfile([FromBody] UserProfileViewModel vm)
+        {
+            vm.PersonalInfo.Email = _userManager.GetUserName(User);
+
+            var result = await _profileService.SaveFullProfileAsync(UserId, vm);
             return Json(result.ToApiResponse());
         }
 
         // ════════════════════════════════════════════════════════
         //  POST /profile/draft
-        //  AJAX — save partial data without full validation
+        //  AJAX — retained for compatibility; drafts are kept client-side
         // ════════════════════════════════════════════════════════
         [HttpPost]
         public async Task<IActionResult> SaveDraft([FromForm] PersonalInfoViewModel vm)

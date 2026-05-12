@@ -29,82 +29,54 @@ namespace Team_Task_Manager.Services.Implementations
             return profile?.ToViewModel();
         }
 
-        // ── Section 1: Personal Info ─────────────────────────────
-        public async Task<Result<string>> SavePersonalInfoAsync(long userId, PersonalInfoViewModel vm)
+        // ── Validation-only endpoints used by section AJAX ───────
+        public Task<Result<string>> ValidatePersonalInfoAsync(PersonalInfoViewModel vm)
         {
             var errors = ValidatePersonalInfo(vm);
-            if (errors.Count > 0)
-                return Result<string>.Failure(errors.Values.ToList());
-
-            var profile = await GetOrCreateProfileAsync(userId, vm);
-            profile.ApplyFrom(vm);
-
-            await _db.SaveChangesAsync();
-            return Result<string>.Success("Personal information saved successfully.");
+            return Task.FromResult(errors.Count > 0
+                ? Result<string>.Failure(errors.Values.ToList())
+                : Result<string>.Success("Personal information is valid."));
         }
 
-        // ── Section 2: Education ─────────────────────────────────
-        public async Task<Result<string>> SaveEducationsAsync(long userId, List<EducationViewModel> vms)
+        public Task<Result<string>> ValidateEducationsAsync(List<EducationViewModel> vms)
         {
             var errors = ValidateEducations(vms);
-            if (errors.Count > 0)
-                return Result<string>.Failure(errors.Values.ToList());
-            var profile = await GetOrCreateProfileAsync(userId);
-            await EnsureProfileIsSavedAsync(profile);
-
-            await UpsertEducationsAsync(profile.Id, vms);
-            return Result<string>.Success("Educations saved successfully.");
+            return Task.FromResult(errors.Count > 0
+                ? Result<string>.Failure(errors.Values.ToList())
+                : Result<string>.Success("Education is valid."));
         }
 
-        // ── Section 3: Skills ────────────────────────────────────
-        public async Task<Result<string>> SaveSkillsAsync(long userId, SkillsViewModel vm)
+        public Task<Result<string>> ValidateSkillsAsync(SkillsViewModel vm)
         {
             var errors = ValidateSkills(vm);
+            return Task.FromResult(errors.Count > 0
+                ? Result<string>.Failure(errors.Values.ToList())
+                : Result<string>.Success("Skills are valid."));
+        }
+
+        // ── Final submit: the only path that persists profile data ─
+        public async Task<Result<string>> SaveFullProfileAsync(long userId, UserProfileViewModel vm)
+        {
+            if (vm == null)
+                return Result<string>.Failure(new List<string> { "Profile payload is required." });
+
+            var errors = ValidateFullProfile(vm);
             if (errors.Count > 0)
                 return Result<string>.Failure(errors.Values.ToList());
 
-            var profile = await GetOrCreateProfileAsync(userId);
-            await EnsureProfileIsSavedAsync(profile);
+            await using var transaction = await _db.Database.BeginTransactionAsync();
 
-            await UpsertSkillsAsync(profile.Id, vm);
-            return Result<string>.Success("Skills saved successfully.");
-        }
-
-        // ── Save Draft (no validation) ───────────────────────────
-        public async Task<Result<string>> SaveDraftAsync(long userId, PersonalInfoViewModel vm)
-        {
-            var profile = await GetOrCreateProfileAsync(userId, vm);
-            profile.ApplyFrom(vm);
-
-            await _db.SaveChangesAsync();
-            return Result<string>.Success("Draft saved.");
-        }
-
-        // ════════════════════════════════════════════════════════
-        //  Private: DB helpers
-        // ════════════════════════════════════════════════════════
-
-        private async Task<UserProfile> GetOrCreateProfileAsync(
-            long userId,
-            PersonalInfoViewModel? personalInfo = null)
-        {
             var profile = await _db.UserProfiles
+                .Include(p => p.Educations)
+                .Include(p => p.Skills)
                 .FirstOrDefaultAsync(p => p.UserId == userId);
 
             if (profile == null)
             {
                 var now = DateTime.UtcNow;
-
                 profile = new UserProfile
                 {
                     UserId = userId,
-                    FirstName = personalInfo?.FirstName?.Trim() ?? string.Empty,
-                    LastName = personalInfo?.LastName?.Trim() ?? string.Empty,
-                    Phone = personalInfo?.Phone,
-                    Location = personalInfo?.Location,
-                    DateOfBirth = personalInfo?.DateOfBirth,
-                    Headline = personalInfo?.Headline,
-                    Bio = personalInfo?.Bio,
                     CreatedAt = now,
                     UpdatedAt = now
                 };
@@ -112,82 +84,95 @@ namespace Team_Task_Manager.Services.Implementations
                 _db.UserProfiles.Add(profile);
             }
 
-            return profile;
-        }
+            profile.ApplyFrom(vm.PersonalInfo);
+            if (!string.IsNullOrWhiteSpace(vm.PersonalInfo.ProfilePictureUrl))
+                profile.ProfilePictureUrl = vm.PersonalInfo.ProfilePictureUrl;
 
-        private async Task EnsureProfileIsSavedAsync(UserProfile profile)
-        {
-            if (profile.Id == 0)
-                await _db.SaveChangesAsync();
-        }
-
-        private async Task UpsertEducationsAsync(int profileId, List<EducationViewModel> vms)
-        {
-            var existing = await _db.Educations
-                .Where(e => e.UserProfileId == profileId)
-                .ToListAsync();
-
-            var submittedIds = vms
-                .Where(v => v.Id.HasValue)
-                .Select(v => v.Id!.Value)
-                .ToHashSet();
-
-            // Delete removed entries
-            _db.Educations.RemoveRange(
-                existing.Where(e => !submittedIds.Contains(e.Id))
-            );
-
-            foreach (var vm in vms)
+            _db.Educations.RemoveRange(profile.Educations.ToList());
+            foreach (var education in vm.Educations)
             {
-                if (vm.Id.HasValue)
+                _db.Educations.Add(new Education
                 {
-                    var row = existing.FirstOrDefault(e => e.Id == vm.Id.Value);
-                    if (row != null) row.ApplyFrom(vm);
-                }
-                else
-                {
-                    _db.Educations.Add(vm.ToEntity(profileId));
-                }
+                    UserProfile = profile,
+                    Institution = education.Institution.Trim(),
+                    Degree = education.Degree.Trim(),
+                    FieldOfStudy = education.FieldOfStudy.Trim(),
+                    GraduationYear = education.GraduationYear,
+                    Description = education.Description
+                });
             }
 
-            await _db.SaveChangesAsync();
-        }
+            _db.UserSkills.RemoveRange(profile.Skills.ToList());
 
-        private async Task UpsertSkillsAsync(int profileId, SkillsViewModel vm)
-        {
-            // Remove all existing skill rows for this profile and re-sync
-            var existing = await _db.UserSkills
-                .Where(us => us.UserProfileId == profileId)
+            var skillTypes = vm.Skills.SkillNames
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .Select(name => Enum.Parse<SkillType>(name, ignoreCase: true))
+                .ToList();
+
+            var existingSkills = await _db.Skills
+                .Where(skill => skillTypes.Contains(skill.Name))
                 .ToListAsync();
 
-            _db.UserSkills.RemoveRange(existing);
-
-            foreach (var name in vm.SkillNames.Distinct(StringComparer.OrdinalIgnoreCase))
+            foreach (var skillType in skillTypes)
             {
-                var skillType = Enum.Parse<SkillType>(name, ignoreCase: true);
-                var skill = await _db.Skills.FirstOrDefaultAsync(s => s.Name == skillType);
+                var skill = existingSkills.FirstOrDefault(existing => existing.Name == skillType);
                 if (skill == null)
                 {
                     skill = new Skill { Name = skillType };
                     _db.Skills.Add(skill);
-                    await _db.SaveChangesAsync(); // get skill.Id before using it
+                    existingSkills.Add(skill);
                 }
 
                 _db.UserSkills.Add(new UserSkill
                 {
-                    UserProfileId = profileId,
-                    SkillId = skill.Id,
-                    YearsOfExperience = vm.YearsOfExperience,
-                    AdditionalNotes = vm.AdditionalNotes,
+                    UserProfile = profile,
+                    Skill = skill,
+                    YearsOfExperience = vm.Skills.YearsOfExperience,
+                    AdditionalNotes = vm.Skills.AdditionalNotes,
                 });
             }
 
             await _db.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            return Result<string>.Success("Profile saved successfully.");
         }
+
+        // ── Section 1: Personal Info ─────────────────────────────
+        public Task<Result<string>> SavePersonalInfoAsync(long userId, PersonalInfoViewModel vm)
+            => ValidatePersonalInfoAsync(vm);
+
+        // ── Section 2: Education ─────────────────────────────────
+        public Task<Result<string>> SaveEducationsAsync(long userId, List<EducationViewModel> vms)
+            => ValidateEducationsAsync(vms);
+
+        // ── Section 3: Skills ────────────────────────────────────
+        public Task<Result<string>> SaveSkillsAsync(long userId, SkillsViewModel vm)
+            => ValidateSkillsAsync(vm);
+
+        // ── Save Draft (no validation) ───────────────────────────
+        public Task<Result<string>> SaveDraftAsync(long userId, PersonalInfoViewModel vm)
+            => Task.FromResult(Result<string>.Success("Draft is kept locally until final submit."));
 
         // ════════════════════════════════════════════════════════
         //  Private: Validation
         // ════════════════════════════════════════════════════════
+
+        private static Dictionary<string, string> ValidateFullProfile(UserProfileViewModel vm)
+        {
+            var errors = new Dictionary<string, string>();
+
+            foreach (var error in ValidatePersonalInfo(vm.PersonalInfo))
+                errors[$"PersonalInfo.{error.Key}"] = error.Value;
+
+            foreach (var error in ValidateEducations(vm.Educations))
+                errors[error.Key] = error.Value;
+
+            foreach (var error in ValidateSkills(vm.Skills))
+                errors[$"Skills.{error.Key}"] = error.Value;
+
+            return errors;
+        }
 
         private static Dictionary<string, string> ValidatePersonalInfo(PersonalInfoViewModel vm)
         {
