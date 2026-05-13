@@ -1,4 +1,22 @@
+@using Microsoft.AspNetCore.Identity
+@using Team_Task_Manager.Services.Interfaces
+@inject UserManager<TaskUser> UserManager
+@inject IUserProfileService ProfileService
+@{
+    var user = await UserManager.GetUserAsync(User);
+
+    var profile = user != null
+        ? await ProfileService.GetProfileAsync(user.Id)
+        : null;
+
+    var profileImage = !string.IsNullOrEmpty(profile?.PersonalInfo.ProfilePictureUrl)
+        ? profile?.PersonalInfo.ProfilePictureUrl
+        : Url.Content("~/img/avatars/1.png");
+
+    var userName = user?.UserName ?? "Guest";
+}
 @* ! Brand demo (display only for navbar-full and hide on below xl) *@
+
 @if (ViewData["navbarFull"] != null)
 {
 <div class="navbar-brand app-brand demo d-none d-xl-flex py-0 me-4">
@@ -53,7 +71,7 @@
     <li class="nav-item navbar-dropdown dropdown-user dropdown">
       <a class="nav-link dropdown-toggle hide-arrow p-0" href="javascript:void(0);" data-bs-toggle="dropdown">
         <div class="avatar avatar-online">
-          <img src="~/img/avatars/1.png" alt class="w-px-40 h-auto rounded-circle" />
+          <img src="@profileImage" alt class="w-px-40 h-auto rounded-circle" />
         </div>
       </a>
       <ul class="dropdown-menu dropdown-menu-end">
@@ -62,12 +80,11 @@
             <div class="d-flex">
               <div class="flex-shrink-0 me-3">
                 <div class="avatar avatar-online">
-                  <img src="~/img/avatars/1.png" alt class="w-px-40 h-auto rounded-circle" />
+                  <img src="@profileImage" alt class="w-px-40 h-auto rounded-circle" />
                 </div>
               </div>
               <div class="flex-grow-1">
-                <h6 class="mb-0">John Doe</h6>
-                <small class="text-body-secondary">Admin</small>
+                <h6 class="mb-0">@userName</h6>
               </div>
             </div>
           </a>

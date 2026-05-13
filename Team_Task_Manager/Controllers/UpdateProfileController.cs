@@ -13,13 +13,15 @@ namespace Team_Task_Manager.Controllers
     {
         private readonly IUserProfileService _profileService;
         private readonly UserManager<TaskUser> _userManager;
+        private readonly IWebHostEnvironment _environment;
 
         public UpdateProfileController(
             IUserProfileService profileService,
-            UserManager<TaskUser> userManager)
+            UserManager<TaskUser> userManager, IWebHostEnvironment environment)
         {
             _profileService = profileService;
             _userManager = userManager;
+            _environment = environment;
         }
 
         // ── Helpers ─────────────────────────────────────────────
@@ -124,29 +126,84 @@ namespace Team_Task_Manager.Controllers
         public async Task<IActionResult> UploadPhoto(IFormFile photo)
         {
             if (photo == null || photo.Length == 0)
-                return Json(new { success = false, errors = new { Photo = "Please select a photo." } });
+            {
+                return Json(new
+                {
+                    success = false,
+                    errors = new
+                    {
+                        Photo = "Please select a photo."
+                    }
+                });
+            }
 
             // Validate file type
-            var allowedTypes = new[] { "image/jpeg", "image/png", "image/webp" };
+            var allowedTypes = new[]
+                {
+                    "image/jpeg",
+                    "image/png",
+                    "image/webp"
+                };
+
             if (!allowedTypes.Contains(photo.ContentType.ToLower()))
-                return Json(new { success = false, errors = new { Photo = "Only JPG, PNG, or WEBP images are allowed." } });
+            {
+                return Json(new
+                {
+                    success = false,
+                    errors = new
+                    {
+                        Photo = "Only JPG, PNG, or WEBP images are allowed."
+                    }
+                });
+            }
 
             // Validate file size (2MB max)
             if (photo.Length > 2 * 1024 * 1024)
-                return Json(new { success = false, errors = new { Photo = "Photo must be under 2MB." } });
-
-            // TODO: Save to blob storage (Azure / S3) and get back the URL
-            // var url = await _storageService.UploadAsync(photo);
-            var url = $"/uploads/profiles/{UserId}{Path.GetExtension(photo.FileName)}";
-
-            // Save URL to profile
-            var profile = await _profileService.GetProfileAsync(UserId);
-            if (profile != null)
             {
-                // Update photo URL via service (add method if needed)
+                return Json(new
+                {
+                    success = false,
+                    errors = new
+                    {
+                        Photo = "Photo must be under 2MB."
+                    }
+                });
             }
 
-            return Json(new { success = true, url });
+            // Path: wwwroot/uploads/profiles
+            var uploadsFolder = Path.Combine(
+                _environment.WebRootPath,
+                "uploads",
+                "profiles"
+            );
+
+            // Create folder if missing
+            if (!Directory.Exists(uploadsFolder))
+            {
+                Directory.CreateDirectory(uploadsFolder);
+            }
+
+            // Unique filename
+            var extension = Path.GetExtension(photo.FileName);
+
+            var fileName = $"{Guid.NewGuid()}{extension}";
+
+            var filePath = Path.Combine(uploadsFolder, fileName);
+
+            // Save file physically
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await photo.CopyToAsync(stream);
+            }
+
+            // URL accessible from browser
+            var url = $"/uploads/profiles/{fileName}";
+
+            return Json(new
+            {
+                success = true,
+                url
+            });
         }
 
         // ════════════════════════════════════════════════════════
